@@ -1,0 +1,29 @@
+/**
+ * @mainpage 
+ * A collection of ROOT macros to automatically analyze data taken from an
+ * experiment to determine the cross section of the 
+ * @f${}^{12}@f$C(n,2n)@f${}^{11}@f$C reaction.
+ *
+ * @note
+ * Usage:
+ * @code {.cxx}
+ * .L c11/decay.C
+ * .L c11/utility.C
+ *
+ * // Locate the correct file for a given run number and target
+ * TSystemDirectory * dir = new TSystemDirectory();
+ * dir->SetDirectory( directory_name );
+ * TSystemFile * file = c11::LocateFile( dir, run_number, target );
+ *
+ * // Parse the file and fit a growth curve to it
+ * TGraphErrors * ge = c11::CreateDecayCurve( file );
+ * TFitResultPtr fr = c11::FitDecayCurve( ge );
+ *
+ * // Display the data and fitted curve
+ * ge->Draw( "ap" );
+ *
+ * // Calculate the original count and uncertainty in that value
+ * Double_t count = c11::GetCountDecay( fr, transit_time, efficiency );
+ * Double_t error = c11::GetErrorDecay( fr, transit_time, efficiency );
+ * @endcode
+ */
