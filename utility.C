@@ -33,6 +33,15 @@ TSystemFile * LocateFile(
 	return NULL;
 }
 
+/**
+ * Attempt to fit every run in the run summary file, and write the results back.
+ *
+ * @param run_summary The Run_Summary.csv file.
+ * @param dir The directory in which to look for the run data.
+ */
+void FitAllRuns( TSystemFile * run_summary, TSystemDirectory * dir )
+{
+}
 
 
 } //namespace c11

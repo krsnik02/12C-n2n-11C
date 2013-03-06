@@ -109,7 +109,8 @@ Double_t GetCountDecay(
  * Calculate the uncertainty in the total number of C11.
  * The uncertainty is given by 
  * @f$\frac{e^{\lambda\,\mathrm{trans\_time}}}{\lambda\,\mathrm{efficiency}}
- * \sqrt{\delta_{N_0}^2+N_0^2(\frac{1}{\lambda}-\mathrm{trans\_time})^2\delta_\lambda^2}@f$.
+ * \sqrt{\delta_{N_0}^2+N_0^2(\frac{1}{\lambda}-\mathrm{trans\_time})^2
+ * \delta_\lambda^2}@f$.
  *
  * To get the total number, use @ref GetCountDecay.
  *
@@ -131,7 +132,8 @@ Double_t GetErrorDecay(
 
 	return TMath::Exp( lambda * trans_time ) / (lambda * efficiency) 
 		* TMath::Sqrt( TMath::Power( err_n0, 2 )
-				+ TMath::Power( n0 * (1 / lambda - trans_time) * err_lambda, 2 ) );
+				+ TMath::Power( n0 * (1 / lambda - trans_time) 
+					* err_lambda, 2 ) );
 }
 
 } // namespace c11
