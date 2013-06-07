@@ -1,4 +1,4 @@
-/** @file summary.C
+/** @file summary.cxx
  * Copyright (C) 2013 Houghton College
  *
  * Update the Run_Summary.csv file.
@@ -6,6 +6,7 @@
 
 #include "decay.H"
 #include "csv.H"
+#include "proton.hxx"
 #include <vector>
 
 namespace c12 {
