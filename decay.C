@@ -1,12 +1,13 @@
-/** @file growth.C
+/** @file decay.C
  * Copyright (C) 2013 Houghton College
  *
- * Contains functions for loading and fitting a decay curve.
+ * Contains functions for determining C11 activation counts.
  */
 
+#include "decay.H"
 #include <vector>
 
-namespace c11 {
+namespace c12 {
 
 /**
  * Parse a decay curve given in a tab-separated file into a TGraphErrors 
@@ -34,8 +35,7 @@ TGraphErrors * CreateDecayCurve( TSystemFile * file )
 			break;
 	}
 
-	// Read the data from the decay curve given in the file into a
-	// growth curve that can be fit more accurately. 
+	// Read the data from the decay curve given in the file.
 	std::vector<float> times;
 	std::vector<float> counts;
 	std::vector<float> errors; 
@@ -74,7 +74,7 @@ TFitResultPtr FitDecayCurve( TGraphErrors * ge )
 			 xmin, xmax );
 	growth->SetParNames( "N_{0}", "#lambda", "A" );
 	growth->SetParameter( 0, ymax );
-	growth->SetParameter( 1, TMath::Log( 2 ) / 20.38 );
+	growth->FixParameter( 1, TMath::Log( 2 ) / 20.334 );
 	growth->SetParameter( 2, 0 );
 
 	// Actually fit the decay curve.
@@ -84,8 +84,8 @@ TFitResultPtr FitDecayCurve( TGraphErrors * ge )
 
 /**
  * Calculate the total number of C11 originally in the sample.
- * This count is given by @f$\frac{N_0e^{\lambda\,\mathrm{trans\_time}}}
- * {\lambda\,\mathrm{efficiency}}@f$.
+ * This count is given by @f$\frac{N_0e^{\lambda\,\cdot\,\mathrm{trans\_time}}}
+ * {\lambda\,\cdot\,\mathrm{efficiency}}@f$.
  *
  * To get the uncertainty in this value, use @ref GetErrorDecay.
  *
@@ -107,10 +107,9 @@ Double_t GetCountDecay(
 
 /**
  * Calculate the uncertainty in the total number of C11.
- * The uncertainty is given by 
- * @f$\frac{e^{\lambda\,\mathrm{trans\_time}}}{\lambda\,\mathrm{efficiency}}
- * \sqrt{\delta_{N_0}^2+N_0^2(\frac{1}{\lambda}-\mathrm{trans\_time})^2
- * \delta_\lambda^2}@f$.
+ * The uncertainty is given by
+ * @f$\frac{\delta_{N_0}e^{\lambda\,\cdot\,\mathrm{trans\_time}}}
+ * {\lambda\,\cdot\,\mathrm{efficiency}}@f$
  *
  * To get the total number, use @ref GetCountDecay.
  *
@@ -128,13 +127,10 @@ Double_t GetErrorDecay(
 	Double_t n0 = fr->Parameter( 0 );
 	Double_t lambda = fr->Parameter( 1 );
 	Double_t err_n0 = fr->ParError( 0 );
-	Double_t err_lambda = fr->ParError( 1 );
 
-	return TMath::Exp( lambda * trans_time ) / (lambda * efficiency) 
-		* TMath::Sqrt( TMath::Power( err_n0, 2 )
-				+ TMath::Power( n0 * (1 / lambda - trans_time) 
-					* err_lambda, 2 ) );
+	return TMath::Exp( lambda * trans_time ) * err_n0
+		/ (lambda * efficiency);
 }
 
-} // namespace c11
+} // namespace c12
 

@@ -7,23 +7,25 @@
  * @note
  * Usage:
  * @code {.cxx}
- * .L c11/decay.C
- * .L c11/utility.C
+ * // -----------------------------------------------------
+ * // Determine total C11 nuclei and add to run_summary.csv
+ * // -----------------------------------------------------
  *
- * // Locate the correct file for a given run number and target
- * TSystemDirectory * dir = new TSystemDirectory();
- * dir->SetDirectory( directory_name );
- * TSystemFile * file = c11::LocateFile( dir, run_number, target );
+ * .L c12/decay.C
+ * .L c12/summary.C
+ * .L c12/csv.C
  *
- * // Parse the file and fit a growth curve to it
- * TGraphErrors * ge = c11::CreateDecayCurve( file );
- * TFitResultPtr fr = c11::FitDecayCurve( ge );
+ * c12::UpdateRunSummary( "C:\\2012_12C(n,2n) Data\\CSV Data" );
  *
- * // Display the data and fitted curve
- * ge->Draw( "ap" );
+ * // --------------------------------
+ * // Determine total number of protons
+ * // ---------------------------------
  *
- * // Calculate the original count and uncertainty in that value
- * Double_t count = c11::GetCountDecay( fr, transit_time, efficiency );
- * Double_t error = c11::GetErrorDecay( fr, transit_time, efficiency );
+ * .L c12/protons.C
+ *
+ * TSystemFile * file = new TSystemFile( <file_name>, <data_directory> );
+ * TNtuple * ntup = c12::CreateProtonDistribution( file );
+ * TH2F * hroi = c12::SelectProtonROI( ntup, <xmin>, <xmax>, <ymin>, <ymax> );
+ * Int_t protons = hroi->GetEntries();
  * @endcode
  */
