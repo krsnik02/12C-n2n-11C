@@ -8,7 +8,7 @@
 
 namespace proton {
 
-Region MPAGetROI( char const * filename )
+TCut MPAGetROI( char const * filename )
 {
 	std::ifstream ifs( filename );
 	std::string line;
@@ -55,10 +55,19 @@ Region MPAGetROI( char const * filename )
 	int xdim, roi_min, roi_max;
 	std::sscanf( str_xdim.c_str(), "xdim=%d", &xdim );
 	std::sscanf( str_roi.c_str(), "roi=%d %d", &roi_min, &roi_max );
-	return Region( roi_min - TMath::Floor( roi_min / xdim ) * xdim,
-		       TMath::Floor( roi_min / xdim ),
-		       roi_max - TMath::Floor( roi_max / xdim ) * xdim,
-		       TMath::Floor( roi_max / xdim ) );
+
+	// Calculate region boundaries
+	int xmin = roi_min - (roi_min / xdim) * xdim;
+	int ymin = (roi_min / xdim);
+	int xmax = roi_max - (roi_max / xdim) * xdim;
+	int ymax = (roi_max / xdim);
+
+	// Convert to a TCut
+	TCut cut_xmin = TString::Format( "x >= %d", xmin );
+	TCut cut_ymin = TString::Format( "y >= %d", ymin );
+	TCut cut_xmax = TString::Format( "x < %d", xmax );
+	TCut cut_ymax = TString::Format( "y < %d", ymax );
+	return cut_xmin && cut_ymin && cut_xmax && cut_ymax;
 }
 
 
@@ -92,17 +101,6 @@ TNtuple * CSVGetData( char const * filename )
 		ntup->Fill( a2, a1, value );
 	}
 	return ntup;
-}
-
-
-int CountsInRegion( TNtuple * data, Region roi )
-{
-	TCut cut_xmin = TString::Format( "x >= %d", roi.xmin );
-	TCut cut_ymin = TString::Format( "y >= %d", roi.ymin );
-	TCut cut_xmax = TString::Format( "x < %d", roi.xmax );
-	TCut cut_ymax = TString::Format( "y < %d", roi.ymax );
-	TCut cut = cut_xmin && cut_ymin && cut_xmax && cut_ymax;
-	return data->GetEntries( cut );
 }
 
 } // namespace proton

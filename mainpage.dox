@@ -24,7 +24,7 @@
  * .L c12/proton.cxx
 
  * TNtuple * data = proton::CSVGetData( <csv_filename> );
- * Region roi     = proton::MPAGetROI( <mpa_filename> );
- * Int_t counts   = proton::CountsInRegion( data, roi );
+ * TCut roi = proton::MPAGetROI( <mpa_filename> );
+ * int counts = data->GetEntries( roi );
  * @endcode
  */
