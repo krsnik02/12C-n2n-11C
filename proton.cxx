@@ -8,7 +8,7 @@
 
 namespace proton {
 
-TCut MPAGetROI( char const * filename )
+Region MPAGetROI( char const * filename )
 {
 	std::ifstream ifs( filename );
 	std::string line;
@@ -61,13 +61,7 @@ TCut MPAGetROI( char const * filename )
 	int ymin = (roi_min / xdim);
 	int xmax = roi_max - (roi_max / xdim) * xdim;
 	int ymax = (roi_max / xdim);
-
-	// Convert to a TCut
-	TCut cut_xmin = TString::Format( "x >= %d", xmin );
-	TCut cut_ymin = TString::Format( "y >= %d", ymin );
-	TCut cut_xmax = TString::Format( "x < %d", xmax );
-	TCut cut_ymax = TString::Format( "y < %d", ymax );
-	return "counts" * (cut_xmin && cut_ymin && cut_xmax && cut_ymax);
+	return Region( xmin, ymin, xmax, ymax );
 }
 
 

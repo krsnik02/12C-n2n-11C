@@ -189,9 +189,14 @@ void UpdateProtons( std::vector<std::string>& row, char const * dirname )
 		return;
 
 	TNtuple * data = proton::CSVGetData( csv_filename );
-	TCut roi = proton::MPAGetROI( mpa_filename );
+	Region roi = proton::MPAGetROI( mpa_filename );
+
+	row[CSV_ROI_XMIN] = TString::Format( "%d", roi.xmin );
+	row[CSV_ROI_YMIN] = TString::Format( "%d", roi.ymin );
+	row[CSV_ROI_XMAX] = TString::Format( "%d", roi.xmax );
+	row[CSV_ROI_YMAX] = TString::Format( "%d", roi.ymax );
 	row[CSV_GROSS_PROTONS] = 
-		TString::Format( "%d", data->GetEntries( roi ) );
+		TString::Format( "%d", data->GetEntries( roi.AsTCut() ) );
 }
 
 /**
