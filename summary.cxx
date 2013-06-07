@@ -170,6 +170,28 @@ void UpdateC11( std::vector<std::string>& row, char const * dirname,
  */
 void UpdateProtons( std::vector<std::string>& row, char const * dirname )
 {
+	std::string run_number = row[CSV_RUN_NUMBER];
+	for ( int i = 0; i < 4 - run_number.length(); ++i )
+		run_number = "0" + run_number;
+
+	char const * csv_filename =
+		gSystem->ConcatFileName( dirname,
+			       ("Run" + run_number + "_1x2.csv").c_str() );
+	char const * mpa_filename =
+		gSystem->ConcatFileName( dirname, 
+				("Run" + run_number + ".mpa").c_str() );
+
+	// NOTE: TSystem::AccessPathName returns *FALSE* if the file
+	// *CAN* be accessed! 
+	// http://root.cern.ch/root/html/TSystem.html#TSystem:AccessPathName
+	if ( gSystem->AccessPathName( csv_filename )
+			|| gSystem->AccessPathName( mpa_filename ) )
+		return;
+
+	TNtuple * data = proton::CSVGetData( csv_filename );
+	TCut roi = proton::MPAGetROI( mpa_filename );
+	row[CSV_GROSS_PROTONS] = 
+		TString::Format( "%d", data->GetEntries( roi ) );
 }
 
 /**
