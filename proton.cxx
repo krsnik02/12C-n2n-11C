@@ -95,14 +95,14 @@ TNtuple * CSVGetData( char const * filename )
 }
 
 
-int CountsInRegion( TNtuple * ntup, Region roi )
+int CountsInRegion( TNtuple * data, Region roi )
 {
 	TCut cut_xmin = TString::Format( "x >= %d", roi.xmin );
 	TCut cut_ymin = TString::Format( "y >= %d", roi.ymin );
 	TCut cut_xmax = TString::Format( "x < %d", roi.xmax );
 	TCut cut_ymax = TString::Format( "y < %d", roi.ymax );
 	TCut cut = cut_xmin && cut_ymin && cut_xmax && cut_ymax;
-	return ntup->GetEntries( cut );
+	return data->GetEntries( cut );
 }
 
 } // namespace proton

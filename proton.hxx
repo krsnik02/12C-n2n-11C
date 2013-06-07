@@ -38,11 +38,11 @@ TNtuple * CSVGetData( char const * filename );
 
 /**
  * Get the number of points in the TNtuple within a specified Region.
- * @param ntup The TNtuple containing the run data
+ * @param data The run data
  * @param roi The region of interest
  * @return The number of points within the region.
  */
-int CountsInRegion( TNtuple * ntup, Region roi );
+int CountsInRegion( TNtuple * data, Region roi );
 
 } // namespace proton
 

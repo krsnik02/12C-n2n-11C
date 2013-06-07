@@ -17,15 +17,14 @@
  *
  * c12::UpdateRunSummary( "C:\\2012_12C(n,2n) Data\\CSV Data" );
  *
- * // --------------------------------
+ * // ---------------------------------
  * // Determine total number of protons
  * // ---------------------------------
- *
- * .L c12/protons.C
- *
- * TSystemFile * file = new TSystemFile( <file_name>, <data_directory> );
- * TNtuple * ntup = c12::CreateProtonDistribution( file );
- * TH2F * hroi = c12::SelectProtonROI( ntup, <xmin>, <xmax>, <ymin>, <ymax> );
- * Int_t protons = hroi->GetEntries();
+
+ * .L c12/proton.cxx
+
+ * TNtuple * data = proton::CSVGetData( <csv_filename> );
+ * Region roi     = proton::MPAGetROI( <mpa_filename> );
+ * Int_t counts   = proton::CountsInRegion( data, roi );
  * @endcode
  */
