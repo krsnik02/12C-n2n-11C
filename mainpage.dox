@@ -7,24 +7,11 @@
  * @note
  * Usage:
  * @code {.cxx}
- * // -----------------------------------------------------
- * // Determine total C11 nuclei and add to run_summary.csv
- * // -----------------------------------------------------
- *
- * .L c12/decay.C
- * .L c12/summary.C
+ * .L c12/decay.cxx
+ * .L c12/summary.cxx
+ * .L c12/proton.cxx
  * .L c12/csv.C
  *
- * c12::UpdateRunSummary( "C:\\2012_12C(n,2n) Data\\CSV Data" );
- *
- * // ---------------------------------
- * // Determine total number of protons
- * // ---------------------------------
-
- * .L c12/proton.cxx
-
- * TNtuple * data = proton::CSVGetData( <csv_filename> );
- * TCut roi = proton::MPAGetROI( <mpa_filename> );
- * int counts = data->GetEntries( roi );
+ * c12::UpdateRunSummary( "C:\\2012_12C(n,2n) Data\\ROOT Data" );
  * @endcode
  */

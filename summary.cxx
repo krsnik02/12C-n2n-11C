@@ -83,7 +83,6 @@ enum C11Target {
  *
  * @param row The row of the csv file to update
  * @param dirname The directory containing decay curves
- * @param target The target to update
  */
 void UpdateC11( std::vector<std::string>& row, char const * dirname )
 {

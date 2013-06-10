@@ -32,9 +32,9 @@ TFitResultPtr Fit( TGraphErrors * ge );
  * This count is given by @f$\frac{N_0e^{\lambda\,\cdot\,\mathrm{trans\_time}}}
  * {\lambda\,\cdot\,\mathrm{efficiency}}@f$.
  *
- * To get the uncertainty in this value, use @ref GetErrorDecay.
+ * To get the uncertainty in this value, use @ref GetError.
  *
- * @param fr	The TFitResultPtr returned by @ref FitDecayCurve.
+ * @param fr	The TFitResultPtr returned by @ref Fit.
  * @param trans_time	The elapsed time before counting began
  * @param efficiency	The efficiency of counting in this sample
  *
@@ -48,9 +48,9 @@ Double_t GetCount( TFitResultPtr fr, Double_t trans_time, Double_t efficiency );
  * @f$\frac{\delta_{N_0}e^{\lambda\,\cdot\,\mathrm{trans\_time}}}
  * {\lambda\,\cdot\,\mathrm{efficiency}}@f$
  *
- * To get the total number, use @ref GetCountDecay.
+ * To get the total number, use @ref GetCount.
  *
- * @param fr	The TFitResultPtr returned by @ref FitDecayCurve.
+ * @param fr	The TFitResultPtr returned by @ref Fit.
  * @param trans_time	The elapsed time before counting began.
  * @param efficiency	The efficiency of counting this sample.
  *
