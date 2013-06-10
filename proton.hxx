@@ -5,9 +5,6 @@
 #ifndef PROTON_HXX_INCLUDED_
 #define PROTON_HXX_INCLUDED_
 
-namespace proton {
-
-
 struct Region
 {
 	int xmin, ymin, xmax, ymax;
@@ -24,6 +21,8 @@ struct Region
 		return cut_xmin && cut_ymin && cut_xmax && cut_ymax;	
 	}
 };
+
+namespace proton {
 
 /**
  * Parse a .mpa file to determine the correct region of interest for the run.

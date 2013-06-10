@@ -136,7 +136,6 @@ void UpdateC11( std::vector<std::string>& row, char const * dirname,
 		file = LocateFile( dir, run_number.c_str(), "puck" );
 	else if ( target == C11_TARGET_PLASTIC )
 		file = LocateFile( dir, run_number.c_str(), "plastic" );
-
 	if ( file )
 	{
 		std::cout << "\n * Calculating decay curve from \""
@@ -181,22 +180,31 @@ void UpdateProtons( std::vector<std::string>& row, char const * dirname )
 		gSystem->ConcatFileName( dirname, 
 				("Run" + run_number + ".mpa").c_str() );
 
+	int roi_xmin = 0, roi_ymin = 0;
+	int roi_xmax = 0, roi_ymax = 0;
+        int gross_p = 0;
+
 	// NOTE: TSystem::AccessPathName returns *FALSE* if the file
 	// *CAN* be accessed! 
 	// http://root.cern.ch/root/html/TSystem.html#TSystem:AccessPathName
-	if ( gSystem->AccessPathName( csv_filename )
-			|| gSystem->AccessPathName( mpa_filename ) )
-		return;
+	if ( !gSystem->AccessPathName( csv_filename )
+			&& !gSystem->AccessPathName( mpa_filename ) )
+	{
+		TNtuple * data = proton::CSVGetData( csv_filename );
+		Region roi = proton::MPAGetROI( mpa_filename );
 
-	TNtuple * data = proton::CSVGetData( csv_filename );
-	Region roi = proton::MPAGetROI( mpa_filename );
+		roi_xmin = roi.xmin;
+		roi_xmax = roi.xmax;
+		roi_ymin = roi.ymin;
+		roi_ymax = roi.ymax;
+		gross_p = data->GetEntries( roi.AsTCut() );
+	}
 
-	row[CSV_ROI_XMIN] = TString::Format( "%d", roi.xmin );
-	row[CSV_ROI_YMIN] = TString::Format( "%d", roi.ymin );
-	row[CSV_ROI_XMAX] = TString::Format( "%d", roi.xmax );
-	row[CSV_ROI_YMAX] = TString::Format( "%d", roi.ymax );
-	row[CSV_GROSS_PROTONS] = 
-		TString::Format( "%d", data->GetEntries( roi.AsTCut() ) );
+	row[CSV_ROI_XMIN] = TString::Format( "%d", roi_xmin );
+	row[CSV_ROI_YMIN] = TString::Format( "%d", roi_ymin );
+	row[CSV_ROI_XMAX] = TString::Format( "%d", roi_xmax );
+	row[CSV_ROI_YMAX] = TString::Format( "%d", roi_ymax );
+	row[CSV_GROSS_PROTONS] = TString::Format( "%d", gross_p );
 }
 
 /**
