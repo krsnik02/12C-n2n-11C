@@ -42,6 +42,7 @@ std::vector<std::string> CSVParseRow( std::string csv_row )
 				elem += csv_row[i];
 		}
 	}
+	row.push_back( elem );
 
 	return row;
 }
