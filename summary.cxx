@@ -11,97 +11,62 @@
 
 namespace c12 {
 
-/** 
- * Traverse the filesystem to locate the specified run data.
- *
- * @param dir A TSystemDirectory object in which to search. This must be a flat
- * directory as this method cannot properly traverse a directory tree.
- * @param run_number The run number to search for.
- * @param target The type of target to search for.
- *
- * @return The TSystemFile object which was found, or the default TSystemFile.
- */
-TSystemFile * LocateFile( 
-		TSystemDirectory * dir,
-		char const * run_number,
-		char const * target )
-{
-	// ensure run number exists and is zero padded
-	std::string run = run_number;
-	if ( run == "" ) 
-		return NULL;
-	for ( int n = 0; n < 4 - run.length(); ++n )
-		run = "0" + run;
-
-	// find the corresponding file
-	TList * files = dir->GetListOfFiles();
-	for ( TIter & i = TIter( files ).Begin(); i != TIter::End(); ++i )
-	{
-		TString * name = new TString( (*i)->GetName() );
-		if ( name->Contains( TPRegexp( "\.[cC][sS][vV]$" ) ) 
-			&& name->Contains( run.c_str() )
-			&& name->Contains( target, TString::kIgnoreCase ) )
-			return (TSystemFile *)*i;
-	}
-	return NULL;
-}
-
 /**
  * Run summary column names
  */
-enum CsvField { 
-        CSV_RUN_NUMBER = 0, 	///< Run number
-	CSV_DATE, 		///< Date of run
-	CSV_START_TIME, 	///< Start time
-	CSV_STOP_TIME, 		///< Stop time
-        CSV_NEUTRON_ENERGY,	///< Energy of neutrons (MeV)
-       	CSV_DEUTERON_ENERGY, 	///< Energy of deuterons (MeV)
-	CSV_CH2_NUMBER,		///< ID/description of CH2 target
-        CSV_CH2_DIAMETER,	///< Diameter of CH2 target (inches)
-       	CSV_CH2_THICKNESS, 	///< Thickness of CH2 target (mm)
-	CSV_GRAPHITE_NUMBER,	///< ID/description of Graphite target
-        CSV_CLOCK_TIME, 	///< Clock time (sec)
-	CSV_LIVE_TIME,		///< Live time (sec)
-       	CSV_ADC1_LIVE_TIME,	///< ADC1 live time (sec)
-        CSV_ADC2_LIVE_TIME,	///< ADC2 live time (sec)
-       	CSV_ADC3_LIVE_TIME, 	///< ADC3 live time (sec)
-	CSV_ADC4_LIVE_TIME,	///< ADC4 live time (sec)
-        CSV_ADC5_LIVE_TIME,	///< ADC5 live time (sec)
-       	CSV_TOTAL_COUNTS,	///< Total counts (a_4 x a_5)
-       	CSV_GROSS_COUNTS,	///< Gross counts (a_4 x a_5)
-        CSV_NET_COUNTS,		///< Net counts (a_4 x a_5)
-       	CSV_DE_DEAD,		///< Dead time of delta-E detector (%)	
-       	CSV_E_DEAD,		///< Dead time of E detector (%)
-       	CSV_TOTAL_LIVE,		///< Total live time of proton telescope (%) 
-        CSV_INTERIM_TIME,	///< Interim/transit time (sec)
-       	CSV_BEAM_CURRENT, 	///< Beam current (&mu;A)
-	CSV_TOTAL_CHARGE,	///< Integrated beam current (&mu;C)
-        CSV_MQ4_A,
-       	CSV_MQ4_B, 
-	CSV_TOTAL_NEUTRONS,	///< Total neutrons (counts/BCI)
-       	CSV_GROSS_NEUTRONS,	///< Gross neutrons (counts/BCI)
-        CSV_NET_NEUTRONS,	///< Net neutrons (counts/BCI)
-	CSV_ROI_XMIN,		///< Min X value for region of interest
-	CSV_ROI_XMAX,		///< Max X value for region of interest
-	CSV_ROI_YMIN,		///< Min Y value for region of interest
-	CSV_ROI_YMAX,		///< Max Y value for region of interest
-	CSV_GROSS_PROTONS,	///< Gross protons detected (counts)
-       	CSV_NET_PROTONS,	///< Net protons detected (counts)
-        CSV_CH2_C11_COUNT,	///< Calculated C11 decays in CH2 (counts)
-       	CSV_CH2_C11_ERROR,	///< Error in CSV_CH2_C11_COUNT
-       	CSV_GRAPHITE_C11_COUNT,	///< Calculated C11 decays in graphite (counts)
-        CSV_GRAPHITE_C11_ERROR,	///< Error in CSV_GRAPHITE_C11_COUNT
-       	CSV_PROTONS_COUNT,	///< Protons detected (counts/&mu;C)
-	CSV_PROTONS_ERROR,	///< Error in CSV_PROTONS_COUNT
-	CSV_PROTONS_PER_NEUTRON,///< Protons detected (counts/neutron)
-        CSV_DISTANCES,		///< Distance Section Header
-       	CSV_CH2_DISTANCE,	///< Distance to front of CH2 (cm)
-       	CSV_GRAPHITE_DISTANCE,	///< Distance to front of graphite (cm)
-        CSV_TELESCOPE_DISTANCE,	///< Distance to front of telescope (cm)
-       	CSV_DE_DISTANCE,	///< Distance to center of dE detector (cm)
-       	CSV_E_DISTANCE,		///< Distance to center of E detector (cm)
-        CSV_NOTES,		///< Notes field
-	CSV_NUM_FIELDS 
+enum RunSummary { 
+        RS_RUN_NUMBER = 0, 	///< Run number
+	RS_DATE, 		///< Date of run
+	RS_START_TIME, 		///< Start time
+	RS_STOP_TIME, 		///< Stop time
+        RS_NEUTRON_ENERGY,	///< Energy of neutrons (MeV)
+       	RS_DEUTERON_ENERGY, 	///< Energy of deuterons (MeV)
+	RS_CH2_NUMBER,		///< ID/description of CH2 target
+        RS_CH2_DIAMETER,	///< Diameter of CH2 target (inches)
+       	RS_CH2_THICKNESS, 	///< Thickness of CH2 target (mm)
+	RS_GRAPHITE_NUMBER,	///< ID/description of Graphite target
+        RS_CLOCK_TIME, 		///< Clock time (sec)
+	RS_LIVE_TIME,		///< Live time (sec)
+       	RS_ADC1_LIVE_TIME,	///< ADC1 live time (sec)
+        RS_ADC2_LIVE_TIME,	///< ADC2 live time (sec)
+       	RS_ADC3_LIVE_TIME, 	///< ADC3 live time (sec)
+	RS_ADC4_LIVE_TIME,	///< ADC4 live time (sec)
+        RS_ADC5_LIVE_TIME,	///< ADC5 live time (sec)
+       	RS_TOTAL_COUNTS,	///< Total counts (a_4 x a_5)
+       	RS_GROSS_COUNTS,	///< Gross counts (a_4 x a_5)
+        RS_NET_COUNTS,		///< Net counts (a_4 x a_5)
+       	RS_DE_DEAD,		///< Dead time of delta-E detector (%)	
+       	RS_E_DEAD,		///< Dead time of E detector (%)
+       	RS_TOTAL_LIVE,		///< Total live time of proton telescope (%) 
+        RS_INTERIM_TIME,	///< Interim/transit time (sec)
+       	RS_BEAM_CURRENT, 	///< Beam current (&mu;A)
+	RS_TOTAL_CHARGE,	///< Integrated beam current (&mu;C)
+        RS_MQ4_A,
+       	RS_MQ4_B, 
+	RS_TOTAL_NEUTRONS,	///< Total neutrons (counts/BCI)
+       	RS_GROSS_NEUTRONS,	///< Gross neutrons (counts/BCI)
+        RS_NET_NEUTRONS,	///< Net neutrons (counts/BCI)
+	RS_ROI_XMIN,		///< Min X value for region of interest
+	RS_ROI_XMAX,		///< Max X value for region of interest
+	RS_ROI_YMIN,		///< Min Y value for region of interest
+	RS_ROI_YMAX,		///< Max Y value for region of interest
+	RS_GROSS_PROTONS,	///< Gross protons detected (counts)
+       	RS_NET_PROTONS,		///< Net protons detected (counts)
+        RS_C11_PLASTIC_COUNT,	///< Calculated C11 decays in CH2 (counts)
+       	RS_C11_PLASTIC_ERROR,	///< Error in CSV_CH2_C11_COUNT
+       	RS_C11_PUCK_COUNT,	///< Calculated C11 decays in graphite (counts)
+        RS_C11_PUCK_ERROR,	///< Error in CSV_GRAPHITE_C11_COUNT
+       	RS_PROTONS_COUNT,	///< Protons detected (counts/&mu;C)
+	RS_PROTONS_ERROR,	///< Error in CSV_PROTONS_COUNT
+	RS_PROTONS_PER_NEUTRON,	///< Protons detected (counts/neutron)
+        RS_DISTANCES,		///< Distance Section Header
+       	RS_CH2_DISTANCE,	///< Distance to front of CH2 (cm)
+       	RS_GRAPHITE_DISTANCE,	///< Distance to front of graphite (cm)
+        RS_TELESCOPE_DISTANCE,	///< Distance to front of telescope (cm)
+       	RS_DE_DISTANCE,		///< Distance to center of dE detector (cm)
+       	RS_E_DISTANCE,		///< Distance to center of E detector (cm)
+        RS_NOTES,		///< Notes field
+	RS_NUM_FIELDS 
 };
 
 /**
@@ -120,45 +85,51 @@ enum C11Target {
  * @param dirname The directory containing decay curves
  * @param target The target to update
  */
-void UpdateC11( std::vector<std::string>& row, char const * dirname, 
-		C11Target target )
+void UpdateC11( std::vector<std::string>& row, char const * dirname )
 {
-	TSystemDirectory * dir = new TSystemDirectory();
-	dir->SetDirectory( dirname );
+	std::string run_number = row[RS_RUN_NUMBER];
+	for ( int i = 0; i < 4 - run_number.length(); ++i )
+		run_number = "0" + run_number;
 
-	std::string run_number = row[CSV_RUN_NUMBER];
-	Double_t trans_time = atoi( row[CSV_INTERIM_TIME].c_str() ) / 60.0;
+	char const * puck_filename = 
+		gSystem->ConcatFileName( dirname,
+				("Run" + run_number + "_puck.csv").c_str() );
+	char const * plast_filename = 
+		gSystem->ConcatFileName( dirname,
+				("Run" + run_number + "_plastic.csv").c_str() );
+
+	std::cout << "\n * Calculating decay curve...\n";
+
+	Double_t trans_time = atoi( row[RS_INTERIM_TIME].c_str() ) / 60.0;
 	Double_t efficiency = 0.12;
-	Double_t count = 0, error = 0;
+	Double_t puck_count = 0, puck_error = 0;
+	Double_t plast_count = 0, plast_error = 0;
 
-	TSystemFile * file;
-        if ( target == C11_TARGET_PUCK )
-		file = LocateFile( dir, run_number.c_str(), "puck" );
-	else if ( target == C11_TARGET_PLASTIC )
-		file = LocateFile( dir, run_number.c_str(), "plastic" );
-	if ( file )
+	// NOTE: TSystem::AccessPathName returns *FALSE* if the file
+	// *CAN* be accessed! 
+	// http://root.cern.ch/root/html/TSystem.html#TSystem:AccessPathName
+	std::cout << "\t - " << puck_filename << "\n";
+	if ( !gSystem->AccessPathName( puck_filename ) )
 	{
-		std::cout << "\n * Calculating decay curve from \""
-			  << gSystem->ConcatFileName( 
-					  file->GetTitle(), file->GetName() )
-			  << "\"...\n";
-
-		TGraphErrors * ge = decay::CSVGetData( file );
+		TGraphErrors * ge = decay::CSVGetData( puck_filename );
 		TFitResultPtr fr = decay::Fit( ge );
-		count = decay::GetCount( fr, trans_time, efficiency );
-		error = decay::GetError( fr, trans_time, efficiency );
+		puck_count = decay::GetCount( fr, trans_time, efficiency );
+		puck_error = decay::GetError( fr, trans_time, efficiency );
 	}
 
-	if ( target == C11_TARGET_PUCK )
+	std::cout << "\t - " << plast_filename << "\n";
+	if ( !gSystem->AccessPathName( plast_filename ) )
 	{
-		row[CSV_GRAPHITE_C11_COUNT] = TString::Format( "%f", count );
-		row[CSV_GRAPHITE_C11_ERROR] = TString::Format( "%f", error );
+		TGraphErrors * ge = decay::CSVGetData( plast_filename );
+		TFitResultPtr fr = decay::Fit( ge );
+		plast_count = decay::GetCount( fr, trans_time, efficiency );
+		plast_error = decay::GetError( fr, trans_time, efficiency );
 	}
-	else if ( target == C11_TARGET_PLASTIC )
-	{
-		row[CSV_CH2_C11_COUNT] = TString::Format( "%f", count );
-		row[CSV_CH2_C11_ERROR] = TString::Format( "%f", error );
-	}
+
+	row[RS_C11_PUCK_COUNT] = TString::Format( "%f", puck_count );
+	row[RS_C11_PUCK_ERROR] = TString::Format( "%f", puck_error );
+	row[RS_C11_PLASTIC_COUNT] = TString::Format( "%f", plast_count );
+	row[RS_C11_PLASTIC_ERROR] = TString::Format( "%f", plast_error );
 }
 
 /**
@@ -169,7 +140,7 @@ void UpdateC11( std::vector<std::string>& row, char const * dirname,
  */
 void UpdateProtons( std::vector<std::string>& row, char const * dirname )
 {
-	std::string run_number = row[CSV_RUN_NUMBER];
+	std::string run_number = row[RS_RUN_NUMBER];
 	for ( int i = 0; i < 4 - run_number.length(); ++i )
 		run_number = "0" + run_number;
 
@@ -180,6 +151,8 @@ void UpdateProtons( std::vector<std::string>& row, char const * dirname )
 		gSystem->ConcatFileName( dirname, 
 				("Run" + run_number + ".mpa").c_str() );
 
+	std::cout << "\n * Calculating proton count...\n";
+
 	int roi_xmin = 0, roi_ymin = 0;
 	int roi_xmax = 0, roi_ymax = 0;
         int gross_p = 0;
@@ -187,6 +160,8 @@ void UpdateProtons( std::vector<std::string>& row, char const * dirname )
 	// NOTE: TSystem::AccessPathName returns *FALSE* if the file
 	// *CAN* be accessed! 
 	// http://root.cern.ch/root/html/TSystem.html#TSystem:AccessPathName
+	std::cout << "\t - " << csv_filename << "\n"
+		  << "\t - " << mpa_filename << "\n";
 	if ( !gSystem->AccessPathName( csv_filename )
 			&& !gSystem->AccessPathName( mpa_filename ) )
 	{
@@ -200,11 +175,11 @@ void UpdateProtons( std::vector<std::string>& row, char const * dirname )
 		gross_p = data->GetEntries( roi.AsTCut() );
 	}
 
-	row[CSV_ROI_XMIN] = TString::Format( "%d", roi_xmin );
-	row[CSV_ROI_YMIN] = TString::Format( "%d", roi_ymin );
-	row[CSV_ROI_XMAX] = TString::Format( "%d", roi_xmax );
-	row[CSV_ROI_YMAX] = TString::Format( "%d", roi_ymax );
-	row[CSV_GROSS_PROTONS] = TString::Format( "%d", gross_p );
+	row[RS_ROI_XMIN] = TString::Format( "%d", roi_xmin );
+	row[RS_ROI_YMIN] = TString::Format( "%d", roi_ymin );
+	row[RS_ROI_XMAX] = TString::Format( "%d", roi_xmax );
+	row[RS_ROI_YMAX] = TString::Format( "%d", roi_ymax );
+	row[RS_GROSS_PROTONS] = TString::Format( "%d", gross_p );
 }
 
 /**
@@ -239,21 +214,15 @@ void UpdateRunSummary( char const * dirname )
 	while ( std::getline( ifs, line ) )
 	{
 		std::vector<std::string> csv_row = CSVParseRow( line );
-		UpdateC11( csv_row, gSystem->ConcatFileName( 
-					dirname, "Decay Curves" ), 
-				C11_TARGET_PUCK );
-		UpdateC11( csv_row, gSystem->ConcatFileName( 
-					dirname, "Decay Curves" ), 
-				C11_TARGET_PLASTIC );
-		UpdateProtons( csv_row, gSystem->ConcatFileName( 
-					dirname, "Proton Telescope" ) );
+		UpdateC11( csv_row, gSystem->ConcatFileName( dirname, "Decay Curves" ) );
+		UpdateProtons( csv_row, gSystem->ConcatFileName( dirname, "Proton Telescope" ) );
 		ofs << CSVFormatRow( csv_row ) << std::endl;
 	}
 
 	ifs.close();
 	ofs.close();
 
-	gSystem->CopyFile( tempname, filename, kTRUE );
+	gSystem->CopyFile( tempname, filename, true );
 	gSystem->Unlink( tempname );
 }
 

@@ -8,14 +8,14 @@ namespace decay {
  * Parse a decay curve given in a tab-separated file into a TGraphErrors 
  * object.
  *
- * @param file The TSystemFile to read. This input file should 
+ * @param filename The file to read. This input file should 
  * be the output of the MPA4 software set to its CSV output mode and contain
  * data from a decay curve.
  *
  * @return A TGraphErrors object containing the input decay curve. 
  * The error is calculated to be the square root of the number of counts.
  */
-TGraphErrors * CSVGetData( TSystemFile * file );
+TGraphErrors * CSVGetData( char const * filename );
 
 /**
  * Fit an exponential decay curve to a TGraphErrors object.

@@ -9,12 +9,10 @@
 
 namespace decay {
 
-TGraphErrors * CSVGetData( TSystemFile * file )
+TGraphErrors * CSVGetData( char const * filename )
 {
 	// Open the file for reading
-	std::ifstream ifs( gSystem->ConcatFileName( 
-				file->GetTitle(), file->GetName() ), 
-			   std::ios::in );
+	std::ifstream ifs( filename, std::ios::in );
 
 	// Skip to the [DATA] section of the file
 	std::string line;
