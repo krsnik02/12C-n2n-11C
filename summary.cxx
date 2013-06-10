@@ -328,12 +328,12 @@ double GetCrossSection_np( double energy )
 }
 
 /** 
- * Get the hydrogen number thickness in a specified thickness of CH2.
- * @f$N_{CH2}(\mathrm{thickness})=\frac{2\rho_{CH2}}{m_{CH2}}\cdot\mathrm{thickness}@f$
+ * Get the number of hydrogen thickness in a specified thickness of CH2.
+ * @f$N_{H,CH_2}(\mathrm{thickness})=\frac{2\rho_{CH2}}{m_{CH2}}\cdot\mathrm{thickness}@f$
  *
  * @param thickness the thickness of the CH2 (cm)
  *
- * @return the hydrogen number thickness in that amount of CH2 (protons/cm^2)
+ * @return the number thickness of hydrogen in that amount of CH2 (protons/cm^2)
  */
 double GetNumberThickness_H_CH2( double thickness )
 {
@@ -344,6 +344,25 @@ double GetNumberThickness_H_CH2( double thickness )
 	
 	// 1 u = 1.660538782e-24 g
 	return 2 * thickness * density_CH2 / (1.660538782e-24 * mass_CH2);	// protons/cm^2
+}
+
+/** 
+ * Get the number thickness of carbon in a specified thickness of CH2.
+ * @f$N_{C,CH_2}(\mathrm{thickness})=\frac{\rho_{CH2}}{m_{CH2}}\cdot\mathrm{thickness}@f$
+ *
+ * @param thickness the thickness of the CH2 (cm)
+ *
+ * @return the number thickness of carbon in that amount of CH2 (protons/cm^2)
+ */
+double GetNumberThickness_C_CH2( double thickness )
+{
+	double mass_H = 1.007825;		// u
+	double mass_C = 12;			// u
+	double mass_CH2 = 2 * mass_H + mass_C;	// u
+	double density_CH2 = 0.89;		// g/cm^3
+
+	// 1 u = 1.660538782e-24 g
+	return thickness * density_CH2 / (1.660538782e-24 * mass_CH2);		// nuclei/cm^2
 }
 
 /**
@@ -379,15 +398,15 @@ void UpdateNeutronFlux( std::vector<std::string> row )
 	double dist_CH2 = 6.5;							// cm
 
 	double cross_section_np = GetCrossSection_np( energy );			// mb/sr
-	double num_thick_CH2 = GetNumberThickness_H_CH2( thick_CH2 );		// protons/cm^2
+	double num_thick_H_CH2 = GetNumberThickness_H_CH2( thick_CH2 );		// protons/cm^2
 	double solid_angle_E = GetSolidAngle( area_E, dist_E );			// sr
 	double solid_angle_CH2 = GetSolidAngle( area_CH2, dist_CH2 );		// sr
 
 	// 1 mb = 1e-27 cm^2
 	double nflux = protons / (cross_section_np * 1e-27
-			* num_thick_CH2 * solid_angle_E * solid_angle_CH2 );	// protons/s*sr
+			* num_thick_H_CH2 * solid_angle_E * solid_angle_CH2 );	// protons/s*sr
 	double nflux_err = protons_err / (cross_section_np * 1e-27
-			* num_thick_CH2 * solid_angle_E * solid_angle_CH2 );	// protons/s*sr
+			* num_thick_H_CH2 * solid_angle_E * solid_angle_CH2 );	// protons/s*sr
 
 	row[CS_PROTONS] = TString::Format( "%f", protons );
 	row[CS_PROTONS_ERR] = TString::Format( "%f", protons_err );
@@ -428,6 +447,7 @@ void UpdateCrossSections( char const * dirname )
 		UpdateBG( row, gSystem->ConcatFileName( dirname, "Run_Summary.csv" ) );
 
 		UpdateNeutronFlux( row );
+		UpdateCrossSection_CH2( row );
 
 		ofs << CSVFormatRow( row ) << std::endl;
 	}
