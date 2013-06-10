@@ -4,8 +4,8 @@
  * Update the Run_Summary.csv file.
  */
 
-#include "decay.H"
 #include "csv.H"
+#include "decay.hxx"
 #include "proton.hxx"
 #include <vector>
 
@@ -143,10 +143,10 @@ void UpdateC11( std::vector<std::string>& row, char const * dirname,
 					  file->GetTitle(), file->GetName() )
 			  << "\"...\n";
 
-		TGraphErrors * ge = CreateDecayCurve( file );
-		TFitResultPtr fr = FitDecayCurve( ge );
-		count = GetCountDecay( fr, trans_time, efficiency );
-		error = GetErrorDecay( fr, trans_time, efficiency );
+		TGraphErrors * ge = decay::CSVGetData( file );
+		TFitResultPtr fr = decay::Fit( ge );
+		count = decay::GetCount( fr, trans_time, efficiency );
+		error = decay::GetError( fr, trans_time, efficiency );
 	}
 
 	if ( target == C11_TARGET_PUCK )
