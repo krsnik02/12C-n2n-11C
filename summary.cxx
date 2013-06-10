@@ -15,7 +15,7 @@ namespace c12 {
  * Run summary column names
  */
 enum RunSummary { 
-        RS_RUN_NUMBER = 0, 	///< Run number
+        RS_RUN_NUMBER, 		///< Run number
 	RS_DATE, 		///< Date of run
 	RS_START_TIME, 		///< Start time
 	RS_STOP_TIME, 		///< Stop time
@@ -66,7 +66,21 @@ enum RunSummary {
        	RS_DE_DISTANCE,		///< Distance to center of dE detector (cm)
        	RS_E_DISTANCE,		///< Distance to center of E detector (cm)
         RS_NOTES,		///< Notes field
-	RS_NUM_FIELDS 
+	RS_NUM_COLUMNS
+};
+
+/**
+ * Cross Section column names
+ */
+enum CrossSection {
+	CS_FG_RUN_NUMBER,	///< Run number of foreground run
+	CS_BG_RUN_NUMBER,	///< Run number of background run
+	CS_ENERGY,		///< Neutron energy for both runs (MeV)
+	CS_FG_PROTONS,		///< Number of protons in foreground run (#)
+	CS_BG_PROTONS,		///< Number of protons in background run (#)
+	CS_FG_LIVE_TIME,	///< Live time of foreground run (s)
+	CS_BG_LIVE_TIME,	///< Live time of background run (s)
+	CS_NUM_COLUMNS
 };
 
 /**
@@ -188,9 +202,6 @@ void UpdateProtons( std::vector<std::string>& row, char const * dirname )
  */
 void UpdateRunSummary( char const * dirname )
 {
-	TSystemDirectory * dir = new TSystemDirectory();
-	dir->SetDirectory( dirname );
-
 	char const * filename = 
 		gSystem->ConcatFileName( dirname, "Run_Summary.csv" );
 	char const * tempname = 
@@ -223,6 +234,82 @@ void UpdateRunSummary( char const * dirname )
 
 	gSystem->CopyFile( tempname, filename, true );
 	gSystem->Unlink( tempname );
+}
+
+/**
+ * Update Cross_Sections.csv file.
+ *
+ * @param dirname The directory in which to look for run data.
+ */
+void UpdateCrossSections( char const * dirname )
+{
+	char const * filename =
+		gSystem->ConcatFileName( dirname, "Cross_Sections.csv" );
+	char const * tempname =
+		gSystem->ConcatFileName( gSystem->TempDirectory(), 
+				"Cross_Sections.csv" );
+	char const * rs_filename =
+		gSystem->ConcatFileName( dirname, "Run_Summary.csv" );
+
+	std::cout << filename << std::endl;
+
+	std::ifstream ifs( filename, std::ios::in );
+	std::ofstream ofs( tempname, std::ios::out );
+	std::ifstream rs_ifs( rs_filename, std::ios::in );
+
+	// Skip over header
+	std::string line;
+	for ( int i = 1; i < 4; ++i )
+	{
+		std::getline( ifs, line );
+		ofs << line << std::endl;
+	}
+
+	// Process rest of file
+	while ( std::getline( ifs, line ) )
+	{
+		std::vector<std::string> row = CSVParseRow( line );
+		int run_fg = atoi( row[CS_FG_RUN_NUMBER].c_str() );
+		int run_bg = atoi( row[CS_BG_RUN_NUMBER].c_str() );
+		std::cout << run_fg << " " << run_bg << std::endl;
+
+		// Get the rows for the foreground and background from the run summary
+		std::string energy, fg_protons, bg_protons, fg_live, bg_live;
+
+		rs_ifs.seekg( 0, rs_ifs.beg );
+		std::string rs_line;
+		for ( int i = 1; i < 4; ++i )
+		{
+			std::getline( rs_ifs, rs_line );
+		}
+
+		while ( std::getline( rs_ifs, rs_line ) )
+		{
+			std::vector<std::string> rs_row = CSVParseRow( rs_line );
+			int run = atoi( rs_row[RS_RUN_NUMBER].c_str() );
+
+			if ( run == run_fg )
+			{
+				energy = rs_row[RS_NEUTRON_ENERGY];
+				fg_protons = rs_row[RS_GROSS_PROTONS];
+				fg_live = rs_row[RS_LIVE_TIME];
+			}
+
+			if ( run == run_bg )
+			{
+				bg_protons = rs_row[RS_GROSS_PROTONS];
+				bg_live = rs_row[RS_LIVE_TIME];
+			}
+		}
+
+		row[CS_ENERGY] = energy;
+		row[CS_FG_PROTONS] = fg_protons;
+		row[CS_BG_PROTONS] = bg_protons;
+		row[CS_FG_LIVE_TIME] = fg_live;
+		row[CS_BG_LIVE_TIME] = bg_live;
+
+		std::cout << CSVFormatRow( row ) << std::endl;
+	}
 }
 
 
