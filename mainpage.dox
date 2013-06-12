@@ -7,11 +7,16 @@
  * @note
  * Usage:
  * @code {.cxx}
- * .L c12/decay.cxx
- * .L c12/summary.cxx
- * .L c12/proton.cxx
- * .L c12/csv.C
+ * // Load the Run_Summary.csv file
+ * .L c12/run_summary.cxx
+ * .L c12/csv_file.cxx
+ * rs::RunSummary * summary = new rs::RunSummary();
+ * summary->Load( "C:\\2012_12C(n,2n) Data\\ROOT Data\\Run_Summary.csv" );
  *
- * c12::UpdateRunSummary( "C:\\2012_12C(n,2n) Data\\ROOT Data" );
+ * // Update the Run_Summary.csv file
+ * .L c12/decay.cxx
+ * .L c12/proton.cxx
+ * summary->Update( "C:\\2012_12C(n,2n) Data\\ROOT Data" );
+ * summary->Save( "C:\\2012_12C(n,2n) Data\\ROOT Data\\Run_Summary.csv" );
  * @endcode
  */
