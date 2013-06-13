@@ -22,15 +22,16 @@ enum CrossSection {
 	CS_NEUTRON_ENERGY,	///< Neutron energy for both runs (MeV)
 	CS_NP_CROSS_SECTION,	///< Cross section of np reaction (mb/sr)
 	CS_CH2_THICKNESS,	///< Thickness of CH2 target (cm)
-	CS_CH2_NUM_H,		///< Number thickness of H in CH2 target (protons/cm^2)
+	CS_CH2_THICK_H,		///< Number thickness of H in CH2 target (mol H/cm^2)
+	CS_CH2_THICK_C,		///< Number thickness of C in CH2 target (mol C/cm^2)
 	CS_DET_AREA,		///< Area of detector (cm^2)
 	CS_DET_DISTANCE,	///< Distance of detector (cm)
 	CS_DET_SOLID_ANGLE,	///< Solid angle of detector (sr)
 	CS_CH2_AREA,		///< Area of CH2 target (cm^2)
 	CS_CH2_DISTANCE,	///< Distance of CH2 target (cm)
 	CS_CH2_SOLID_ANGLE,	///< Solid angle of CH2 target (sr)
-	CS_NEUTRON_FLUX,	///< Measured neutron flux (neutrons/s)
-	CS_NEUTRON_FLUX_ERR,	///< Error in neutron flux (neutrons/s)
+	CS_NEUTRON_FLUX,	///< Measured neutron flux (neutrons/s sr)
+	CS_NEUTRON_FLUX_ERR,	///< Error in neutron flux (neutrons/s sr)
 	CS_NUM_COLUMNS
 };
 
@@ -38,11 +39,8 @@ enum CrossSection {
 struct CrossSection : public csv::CSVFile
 {
 	public:
-		/**
-		 * Calculate the cross section for each row in the file
-		 * @param summary The run summary.
-		 */
-		void Update( rs::RunSummary const * const summary );
+		void LoadSummary( rs::RunSummary const * const summary );
+		void Calculate();
 };
 
 } // namespace cs

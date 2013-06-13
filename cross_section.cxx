@@ -52,11 +52,11 @@ Error<double> CalcProtons( int fg_protons, int bg_protons, double fg_live, doubl
 }
 
 /**
- * Calculate the @f$(n,p)@f$ cross section, @f$\sigma_{np}@f$, at the given energy 
+ * Calculate the @f$(n,p)@f$ cross section, @f$\sigma_{np}(T)@f$, at the given energy 
  * by interpolating between known cross sections.
  *
  * @param energy The kinetic energy, @f$T@f$ (MeV)
- * @return The cross section, @f$\sigma_{np}@f$	(mb/sr)
+ * @return The cross section, @f$\sigma_{np}(T)@f$	(mb/sr)
  */
 double CalcNPCrossSection( double energy )
 {
@@ -70,11 +70,11 @@ double CalcNPCrossSection( double energy )
 /**
  * Determine the thickness of the @f$\text{CH}_2@f$ target, @f$N_{H,CH_2}@f$ 
  * (@f$\frac{\text{H nuclei}}{\mathrm{cm}^2}@f$).
- * @f[t_{H,CH_2}=2\frac{\rho_{CH_2}}{m_{CH_2}}t_{CH_2}@f]
+ * @f[N_{H,CH_2}=2\frac{\rho_{CH_2}}{m_{CH_2}}t_{CH_2}@f]
  *
  * @param thickness the thickness of the @f$\text{CH}_2@f$, @f$t_{CH_2}@f$ (cm)
- * @return the number thickness of hydrogen, @f$t_{H,CH_2}@f$ 
- * (@f$\frac{\text{H nuclei}}{\mathrm{cm}^2}@f$)
+ * @return the number thickness of hydrogen, @f$N_{H,CH_2}@f$ 
+ * (@f$\frac{\text{mol H}}{\mathrm{cm}^2}@f$)
  */
 double CalcThickness_H_CH2( double thickness )
 {
@@ -83,33 +83,114 @@ double CalcThickness_H_CH2( double thickness )
 	double mass_CH2 = 2 * mass_H + mass_C;
 	double density_CH2 = 0.89;	// g/cm^3
 
-	double N_a = 6.0231415e23;	// nuclei/mol
-	return 2 * thickness * density_CH2 * N_a / mass_CH2;
+	return 2 * thickness * density_CH2 / mass_CH2;
 }
 
+/**
+ * Determine the thickness of the @f$\text{CH}_2@f$ target, @f$N_{C,CH_2}@f$ 
+ * (@f$\frac{\text{C nuclei}}{\mathrm{cm}^2}@f$).
+ * @f[N_{C,CH_2}=\frac{\rho_{CH_2}}{m_{CH_2}}t_{CH_2}@f]
+ *
+ * @param thickness the thickness of the @f$\text{CH}_2@f$, @f$t_{CH_2}@f$ (cm)
+ * @return the number thickness of carbon, @f$N_{C,CH_2}@f$ 
+ * (@f$\frac{\text{mol C}}{\mathrm{cm}^2}@f$)
+ */
+double CalcThickness_C_CH2( double thickness )
+{
+	double mass_H = 1.007825;	// u = g/mol
+	double mass_C = 12;		// u = g/mol
+	double mass_CH2 = 2 * mass_H + mass_C;
+	double density_CH2 = 0.89;	// g/cm^3
 
-void CrossSection::Update( rs::RunSummary const * const summary )
+	return thickness * density_CH2 / mass_CH2;
+}
+
+/**
+ * Calculate a solid angle from a distance and area.
+ * @f[\Omega=\frac{A}{d^2}@f]
+ *
+ * @param area The area of the target, @f$A@f$ (@f$\text{cm}^2@f$)
+ * @param dist The distance to the target, @f$d@f$ (cm)
+ * @return The solid angle, @f$\Omega@f$ (sr)
+ */
+double CalcSolidAngle( double area, double dist )
+{
+	return area / pow( dist, 2 );
+}
+
+/**
+ * Calculate the neutron flux, @f$N_{flux}@f$.
+ * @f[N_{flux}=\frac{N_p}{\sigma_{np}(T)N_{H,CH_2}\Omega_{det}\Omega_{CH_2}}@f]
+ * @f[\delta_{N_{flux}}=\frac{\delta_{N_p}}{\sigma_{np}(T)N_{H,CH_2}\Omega_{det}\Omega_{CH_2}}@f]
+ *
+ * @param protons The proton flux, @f$N_p@f$ (protons/s)
+ * @param sigma_np The cross section of the @f$(n,p)@f$ reaction, @f$\sigma_{np}@f$ (mb/sr)
+ * @param nH_ch2 The number thickness of hydrogen, @f$N_{H,CH_2}@f$ (mol H/cm^2)
+ * @param sang_det The solid angle of the proton detector, @f$\Omega_{det}@f$ (sr)
+ * @param sang_ch2 The solid angle of the ch2 target, @f$\Omega_{CH_2}@f$ (sr)
+ * @return The neutron flux, @f$N_{flux}@f$ (neutrons/s sr)
+ */
+Error<double> CalcNeutronFlux( Error<double> protons, double sigma_np, double nH_ch2,
+		double sang_det, double sang_ch2 )
+{
+	// 1 mb = 1e-27 cm^2
+	// 1 mol = 6.0231415e23 nuclei
+	// 6.0231415e23 * 1e-27 = 6.0231415e-4
+	double denom = sigma_np * nH_ch2 * sang_det * sang_ch2 * 6.0231415e-4;
+
+	Error<double> flux;
+	flux.value = protons.value / denom;
+	flux.error = protons.error / denom;
+	return flux;
+}
+
+void CrossSection::LoadSummary( rs::RunSummary const * const summary )
 {
 	for ( int i = 3; i < NumRows(); ++i )
 	{
 		vector<string> row = GetRow( i );
 		cs::UpdateSummary( row, summary );
+		SetRow( i, row );
+	}
+}
+
+void CrossSection::Calculate()
+{
+	for ( int i = 3; i < NumRows(); ++i )
+	{
+		vector<string> row = GetRow( i );
 
 		int fg_protons = atoi( row[CS_FG_PROTONS].c_str() );
 		int bg_protons = atoi( row[CS_BG_PROTONS].c_str() );
 		double fg_live = atof( row[CS_FG_LIVE_TIME].c_str() );
 		double bg_live = atof( row[CS_BG_LIVE_TIME].c_str() );
-		Error<double> protons = CalcProtons( fg_protons, bg_protons, fg_live, bg_live );
+		Error<double> protons = cs::CalcProtons( fg_protons, bg_protons, fg_live, bg_live );
 		row[CS_PROTONS] = TString::Format( "%f", protons.value );
 		row[CS_PROTONS_ERR] = TString::Format( "%f", protons.error );
 
 		double energy = atoi( row[CS_NEUTRON_ENERGY].c_str() );
-		double sigma_np = CalcNPCrossSection( energy );
+		double sigma_np = cs::CalcNPCrossSection( energy );
 		row[CS_NP_CROSS_SECTION] = TString::Format( "%f", sigma_np );
 
-		double tt_CH2 = atof( row[CS_CH2_THICKNESS].c_str() );
-		double tH_CH2 = CalcThickness_H_CH2( tt_CH2 );
-		row[CS_CH2_NUM_H] = TString::Format( "%f", tH_CH2 );
+		double t_ch2 = atof( row[CS_CH2_THICKNESS].c_str() );
+		double nH_ch2 = cs::CalcThickness_H_CH2( t_ch2 );
+		double nC_ch2 = cs::CalcThickness_C_CH2( t_ch2 );
+		row[CS_CH2_THICK_H] = TString::Format( "%f", nH_ch2 );
+		row[CS_CH2_THICK_C] = TString::Format( "%f", nC_ch2 );
+
+		double area_det = atof( row[CS_DET_AREA].c_str() );
+		double dist_det = atof( row[CS_DET_DISTANCE].c_str() );
+		double sang_det = cs::CalcSolidAngle( area_det, dist_det );
+		row[CS_DET_SOLID_ANGLE] = TString::Format( "%f", sang_det );
+
+		double area_ch2 = atof( row[CS_CH2_AREA].c_str() );
+		double dist_ch2 = atof( row[CS_CH2_DISTANCE].c_str() );
+		double sang_ch2 = cs::CalcSolidAngle( area_ch2, dist_ch2 );
+		row[CS_CH2_SOLID_ANGLE] = TString::Format( "%f", sang_ch2 );
+
+		Error<double> flux = cs::CalcNeutronFlux( protons, sigma_np, nH_ch2, sang_det, sang_ch2 );
+		row[CS_NEUTRON_FLUX] = TString::Format( "%f", flux.value );
+		row[CS_NEUTRON_FLUX_ERR] = TString::Format( "%f", flux.error );
 
 		SetRow( i, row );
 	}
