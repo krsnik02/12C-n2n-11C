@@ -48,6 +48,18 @@ void UpdateSummary( vector<string> & row, rs::RunSummary const * const summary )
 	row[CS_C11_CH2_ERR]	= fg[rs::RS_C11_PLASTIC_ERR];
 }
 
+void CrossSection::LoadSummary( rs::RunSummary const * const summary )
+{
+	for ( int i = 3; i < NumRows(); ++i )
+	{
+		vector<string> row = GetRow( i );
+		cs::UpdateSummary( row, summary );
+		SetRow( i, row );
+	}
+}
+
+
+
 /**
  * Calculate the proton flux, @f$N_p@f$.
  * @f[N_p=\frac{N_{p,fg}}{t_{live,fg}}-\frac{N_{p,bg}}{t_{live,bg}}@f]
@@ -160,16 +172,6 @@ Error<double> CalcNeutronFlux( Error<double> protons, double sigma_np, double nH
 	flux.value = protons.value / denom;
 	flux.error = protons.error / denom;
 	return flux;
-}
-
-void CrossSection::LoadSummary( rs::RunSummary const * const summary )
-{
-	for ( int i = 3; i < NumRows(); ++i )
-	{
-		vector<string> row = GetRow( i );
-		cs::UpdateSummary( row, summary );
-		SetRow( i, row );
-	}
 }
 
 void CrossSection::Calculate()
