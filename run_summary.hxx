@@ -64,9 +64,7 @@ enum RunSummary {
 	RS_NUM_COLUMNS
 };
 
-/**
- * Provides easy access to the Run Summary file
- */
+
 struct RunSummary : public csv::CSVFile
 {
 	public:

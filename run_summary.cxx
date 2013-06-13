@@ -90,7 +90,7 @@ void UpdateProtons( vector<string> & run, char const * dirname )
 
 void RunSummary::Update( char const * dirname )
 {
-	for ( int i = 0; i < NumRuns(); ++i )
+	for ( int i = 1; i < NumRuns(); ++i )
 	{
 		vector<string> run = GetRun( i );
 		rs::UpdateC11( run, gSystem->PrependPathName( dirname, "Decay Curves" ) );
