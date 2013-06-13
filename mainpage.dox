@@ -18,5 +18,15 @@
  * .L c12/proton.cxx
  * summary->Update( "C:\\2012_12C(n,2n) Data\\ROOT Data" );
  * summary->Save( "C:\\2012_12C(n,2n) Data\\ROOT Data\\Run_Summary.csv" );
+ *
+ * // Load the Cross_Sections.csv file
+ * .L c12/cross_section.cxx
+ * cs::CrossSection * cross = new cs::CrossSection();
+ * cross->Load( "C:\\2012_12C(n,2n) Data\\ROOT Data\\Cross_Sections.csv" );
+ *
+ * // Update the Cross_Sections.csv file
+ * cross->LoadSummary( summary );
+ * cross->Calculate();
+ * cross->Save( "C:\\2012_12C(n,2n) Data\\ROOT Data\\Cross_Sections.csv" );
  * @endcode
  */
