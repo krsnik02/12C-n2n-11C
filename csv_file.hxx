@@ -22,14 +22,14 @@ struct CSVFile
 		 * Save a file containing csv formatted data.
 		 * @param filename The file to save to.
 		 */
-		void Save( char const * filename );
+		void Save( char const * filename ) const;
 
 		/**
 		 * Retrieve a row from the file.
 		 * @param row_number The row to retrieve.
 		 * @return The requested row.
 		 */
-		vector<string> GetRow( int row_number );
+		vector<string> GetRow( int row_number ) const;
 
 		/**
 		 * Overwrite a row in the file.
@@ -41,7 +41,7 @@ struct CSVFile
 		/**
 		 * Get the number of rows in the file.
 		 */
-		int NumRows();
+		int NumRows() const;
 
 	private:
 		vector<string> data_;

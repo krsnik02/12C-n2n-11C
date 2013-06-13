@@ -6,7 +6,7 @@
 
 namespace rs {
 
-vector<string> RunSummary::GetRun( int run_number )
+vector<string> RunSummary::GetRun( int run_number ) const
 {
 	vector<string> row = GetRow( run_number + 2 );
 	assert( atoi( row[RS_RUN_NUMBER].c_str() ) == run_number );
@@ -19,7 +19,7 @@ void RunSummary::SetRun( int run_number, vector<string> const & row )
 	SetRow( run_number + 2, row );
 }
 
-int RunSummary::NumRuns()
+int RunSummary::NumRuns() const
 {
 	return NumRows() - 2;
 }

@@ -73,7 +73,7 @@ struct RunSummary : public csv::CSVFile
 		 * @param run_number The run to retrieve.
 		 * @return The requested run.
 		 */
-		vector<string> GetRun( int run_number );
+		vector<string> GetRun( int run_number ) const;
 
 		/**
 		 * Save a run by number.
@@ -85,7 +85,7 @@ struct RunSummary : public csv::CSVFile
 		/**
 		 * Get the number of runs in the file
 		 */
-		int NumRuns();
+		int NumRuns() const;
 
 		/**
 		 * Calculate the number of C11 nuclei and protons for each run.

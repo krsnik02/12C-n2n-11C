@@ -18,7 +18,7 @@ void CSVFile::Load( char const * filename )
 	}
 }
 
-void CSVFile::Save( char const * filename )
+void CSVFile::Save( char const * filename ) const
 {
 	ofstream os( filename );
 	for ( vector<string>::iterator i = data_.begin();
@@ -28,7 +28,7 @@ void CSVFile::Save( char const * filename )
 	}
 }
 
-vector<string> CSVFile::GetRow( int row_number )
+vector<string> CSVFile::GetRow( int row_number ) const
 {
 	return ParseRow( data_[row_number] );
 }
@@ -38,7 +38,7 @@ void CSVFile::SetRow( int row_number, vector<string> const & row )
 	data_[row_number] = FormatRow( row );
 }
 
-int CSVFile::NumRows()
+int CSVFile::NumRows() const
 {
 	return data_.size();
 }
