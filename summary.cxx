@@ -12,67 +12,6 @@
 namespace c12 {
 
 
-
-
-void UpdateFG( std::vector<std::string> & row, char const * filename )
-{
-	std::string fg_run = row[CS_FG_RUN_NUMBER];
-
-	std::ifstream ifs( filename, std::ios::in );
-
-	// Skip over header
-	std::string line;
-	for ( int i = 1; i < 4; ++i )
-	{
-		std::getline( ifs, line );
-	}
-
-	std::vector<std::string> fg;
-	while ( std::getline( ifs, line ) )
-	{
-		fg = CSVParseRow( line );
-		if ( fg_run == fg[RS_RUN_NUMBER] )
-			break;
-	}
-
-	row[CS_NEUTRON_ENERGY] = fg[RS_NEUTRON_ENERGY];
-	row[CS_BEAM_CHARGE] = fg[RS_TOTAL_CHARGE];
-	row[CS_FG_PROTONS] = fg[RS_GROSS_PROTONS];
-	row[CS_FG_LIVE_TIME] = fg[RS_LIVE_TIME];
-	row[CS_ELAPSED_TIME] = fg[RS_CLOCK_TIME];
-
-	row[CS_C11_PLASTIC] = fg[RS_C11_PLASTIC];
-	row[CS_C11_PLASTIC_ERR] = fg[RS_C11_PLASTIC_ERR];
-	row[CS_C11_PUCK] = fg[RS_C11_PUCK];
-	row[CS_C11_PUCK_ERR] = fg[RS_C11_PUCK_ERR];
-}
-
-void UpdateBG( std::vector<std::string> & row, char const * filename )
-{
-	std::string bg_run = row[CS_BG_RUN_NUMBER];
-
-	std::ifstream ifs( filename, std::ios::in );
-
-	// Skip over header
-	std::string line;
-	for ( int i = 1; i < 4; ++i )
-	{
-		std::getline( ifs, line );
-	}
-
-	std::vector<std::string> bg;
-	while ( std::getline( ifs, line ) )
-	{
-		bg = CSVParseRow( line );
-		if ( bg_run == bg[RS_RUN_NUMBER] )
-			break;
-	}
-
-	row[CS_BG_PROTONS] = bg[RS_GROSS_PROTONS];
-	row[CS_BG_LIVE_TIME] = bg[RS_LIVE_TIME];
-}
-
-
 /**
  * Determine the cross section of a (n,p) reaction based on a 
  * cspline interpolation between known cross sections.
