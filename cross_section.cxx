@@ -62,6 +62,7 @@ void CrossSection::LoadSummary( rs::RunSummary const * const summary )
 
 /**
  * Calculate the proton flux, @f$N_p@f$.
+ *
  * @f[N_p=\frac{N_{p,fg}}{t_{live,fg}}-\frac{N_{p,bg}}{t_{live,bg}}@f]
  * @f[\delta_{N_p}=\sqrt{\left(\frac{\sqrt{N_{p,fg}}}{t_{live,fg}}\right)^2+
  * \left(\frac{\sqrt{N_{p,bg}}}{t_{live,bg}}\right)^2}@f]
@@ -70,7 +71,7 @@ void CrossSection::LoadSummary( rs::RunSummary const * const summary )
  * @param bg_protons Number of protons in background, @f$N_{p,bg}@f$ (protons)
  * @param fg_live Live time of foreground, @f$t_{live,fg}@f$ (s)
  * @param bg_live Live time of background, @f$t_{live,bg}@f$ (s)
- * @return The proton flux, @f$N_p@f$ (protons/s)
+ * @return The proton flux, @f$N_p@f$ (@f$\frac{\text{protons}}{\text{s}}@f$)
  */
 Error<double> CalcProtonFlux( int fg_protons, int bg_protons, double fg_live, double bg_live )
 {
@@ -100,6 +101,7 @@ double CalcNPCrossSection( double energy )
 /**
  * Determine the thickness of the @f$\text{CH}_2@f$ target, @f$N_{H,CH_2}@f$ 
  * (@f$\frac{\text{H nuclei}}{\mathrm{cm}^2}@f$).
+ *
  * @f[N_{H,CH_2}=2\frac{\rho_{CH_2}}{m_{CH_2}}t_{CH_2}@f]
  *
  * @param thickness the thickness of the @f$\text{CH}_2@f$, @f$t_{CH_2}@f$ (cm)
@@ -119,6 +121,7 @@ double CalcThickness_H_CH2( double thickness )
 /**
  * Determine the thickness of the @f$\text{CH}_2@f$ target, @f$N_{C,CH_2}@f$ 
  * (@f$\frac{\text{C nuclei}}{\mathrm{cm}^2}@f$).
+ *
  * @f[N_{C,CH_2}=\frac{\rho_{CH_2}}{m_{CH_2}}t_{CH_2}@f]
  *
  * @param thickness the thickness of the @f$\text{CH}_2@f$, @f$t_{CH_2}@f$ (cm)
@@ -137,6 +140,7 @@ double CalcThickness_C_CH2( double thickness )
 
 /**
  * Calculate a solid angle from a distance and area.
+ *
  * @f[\Omega=\frac{A}{d^2}@f]
  *
  * @param area The area of the target, @f$A@f$ (@f$\text{cm}^2@f$)
@@ -150,15 +154,19 @@ double CalcSolidAngle( double area, double dist )
 
 /**
  * Calculate the neutron flux, @f$N_{flux}@f$.
+ *
  * @f[N_{flux}=\frac{N_p}{\sigma_{np}(T)N_{H,CH_2}\Omega_{det}\Omega_{CH_2}}@f]
  * @f[\delta_{N_{flux}}=\frac{\delta_{N_p}}{\sigma_{np}(T)N_{H,CH_2}\Omega_{det}\Omega_{CH_2}}@f]
  *
- * @param protons The proton flux, @f$N_p@f$ (protons/s)
- * @param sigma_np The cross section of the @f$(n,p)@f$ reaction, @f$\sigma_{np}@f$ (mb/sr)
- * @param nH_ch2 The number thickness of hydrogen, @f$N_{H,CH_2}@f$ (mol H/cm^2)
+ * @param protons The proton flux, @f$N_p@f$ (@f$\frac{\text{protons}}{\text{s}}@f$)
+ * @param sigma_np The cross section of the @f$(n,p)@f$ reaction, @f$\sigma_{np}@f$ 
+ * (@f$\frac{\text{mb}}{\text{sr}}@f$)
+ * @param nH_ch2 The number thickness of hydrogen, @f$N_{H,CH_2}@f$ 
+ * (@f$\frac{\text{mol H}}{\text{cm}^2}@f$)
  * @param sang_det The solid angle of the proton detector, @f$\Omega_{det}@f$ (sr)
  * @param sang_ch2 The solid angle of the ch2 target, @f$\Omega_{CH_2}@f$ (sr)
- * @return The neutron flux, @f$N_{flux}@f$ (neutrons/s sr)
+ * @return The neutron flux, @f$N_{flux}@f$ 
+ * (@f$\frac{\text{neutrons}}{\text{s}\cdot\text{sr}}@f$)
  */
 Error<double> CalcNeutronFlux( Error<double> protons, double sigma_np, double nH_ch2,
 		double sang_det, double sang_ch2 )
@@ -172,6 +180,47 @@ Error<double> CalcNeutronFlux( Error<double> protons, double sigma_np, double nH
 	flux.value = protons.value / denom;
 	flux.error = protons.error / denom;
 	return flux;
+}
+
+/**
+ * Calculate the @f$(n,2n)@f$ cross sections, @f$\sigma_{n2n}@f$, 
+ * where @f$\lambda_{C11} = \frac{\ln(2)}{20.334~\text{min}}@f$
+ * is the C11 decay constant.
+ *
+ * @f[\sigma_{n2n}=\frac{N_{C11}}{\text{efficiency}}\frac{\lambda_{C11}}
+ * {N_{C,tar}N_{flux}\Omega_{tar}(1-e^{-\lambda_{C11}t_{act}})}@f]
+ * @f[\delta_{\sigma_{n2n}}=\frac{N_{C11}}{\text{efficiency}}\frac{\lambda_{C11}}
+ * {N_{C,tar}N_{flux}\Omega_{tar}(1-e^{-\lambda_{C11}t_{act}})}
+ * \sqrt{\left(\frac{\delta_{N_{flux}}}{N_{flux}}\right)^2+
+ * \left(\frac{\delta_{N_{C11}}}{N_{C11}}\right)^2}@f]
+ * 
+ * @param c11 The number of C11 nuclei, @f$N_{C11}@f$ (C11 nuclei)
+ * @param flux The neutron flux, @f$N_{flux}@f$ 
+ * (@f$\frac{\text{neutrons}}{\text{s}\cdot\text{sr}}@f$)
+ * @param efficiency An efficiency correction factor
+ * @param time The total activation time, @f$t_{act}@f$ (s)
+ * @param thickness The number thickness of carbon in target, @f$N_{C,tar}@f$ 
+ * (@f$\frac{\text{mol C}}{\text{cm}^2}@f$)
+ * @param sang The solid angle of target, @f$\Omega_{tar}@f$ (sr)
+ * @return The cross section, @f$\sigma_{n2n}@f$ (mb)
+ */
+Error<double> CalcN2NCrossSection( Error<double> c11, Error<double> flux, 
+		double efficiency, double time, double thickness, double sang )
+{	
+	// 1 min = 60 s
+	double decay = TMath::Log( 2 ) / (20.334 * 60);	// (1/s)
+
+	// 1 mb = 1e-27 cm^2
+	// 1 mol = 6.0231415e23 nuclei
+	// 6.0231415e23 * 1e-27 = 6.0231415e-4
+	double denom = thicknes * flux.value * sang * 6.0231415e-4
+		* (1 - TMath::Exp( -decay * time ));
+
+	Error<double> xsect;
+	xsect.value = c11.value * decay / (efficiency * denom);
+	xsect.error = xsect.value * sqrt( pow( flux.error / flux.value, 2 ) +
+			pow( c11.error / c11.value, 2 ) );
+	return xsect;
 }
 
 void CrossSection::Calculate()
@@ -215,7 +264,7 @@ void CrossSection::Calculate()
 		c11_ch2.value = atof( row[CS_C11_CH2].c_str() );
 		c11_ch2.error = atof( row[CS_C11_CH2_ERR].c_str() );
 
-		// Calculate the cross sections
+		// Calculate the flux
 		Error<double> protons = 
 			cs::CalcProtonFlux( fg_protons, bg_protons, fg_live, bg_live );
 		row[CS_PROTON_FLUX]     = TString::Format( "%f", protons.value );
@@ -226,6 +275,7 @@ void CrossSection::Calculate()
 		row[CS_NEUTRON_FLUX]     = TString::Format( "%f", neutrons.value );
 		row[CS_NEUTRON_FLUX_ERR] = TString::Format( "%f", neutrons.error );
 
+		// Caclulate cross sections
 		Error<double> sigma_n2n_ch2 =
 			cs::CalcN2NCrossSection( c11_ch2, neutrons, 5.83, clock, nC_ch2, sang_ch2 );
 		Error<double> sigma_n2n_c12 =
