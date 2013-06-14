@@ -91,8 +91,11 @@ Error<double> CalcProtonFlux( int fg_protons, int bg_protons, double fg_live, do
  */
 double CalcNPCrossSection( double energy )
 {
+	// Data from http://nn-online.org/
+	// Lab frame
 	double energies[] = {  20,  22,  24,  26,  28 };	// (MeV)
 	double xsects[]   = { 153, 139, 128, 119, 111 };	// (mb/sr)
+
 	ROOT::Math::Interpolator interp( 5 );
 	interp.SetData( 5, energies, xsects );
 	return interp.Eval( energy );
@@ -119,14 +122,13 @@ double CalcThickness_H_CH2( double thickness )
 }
 
 /**
- * Determine the thickness of the @f$\text{CH}_2@f$ target, @f$N_{C,CH_2}@f$ 
- * (@f$\frac{\text{C nuclei}}{\mathrm{cm}^2}@f$).
+ * Determine the number thickness of the @f$\text{CH}_2@f$ target, @f$N_{C,CH_2}@f$.
  *
  * @f[N_{C,CH_2}=\frac{\rho_{CH_2}}{m_{CH_2}}t_{CH_2}@f]
  *
  * @param thickness the thickness of the @f$\text{CH}_2@f$, @f$t_{CH_2}@f$ (cm)
  * @return the number thickness of carbon, @f$N_{C,CH_2}@f$ 
- * (@f$\frac{\text{mol C}}{\mathrm{cm}^2}@f$)
+ * (@f$\frac{\text{mol C}}{\text{cm}^2}@f$)
  */
 double CalcThickness_C_CH2( double thickness )
 {
@@ -136,6 +138,22 @@ double CalcThickness_C_CH2( double thickness )
 	double density_CH2 = 0.89;	// g/cm^3
 
 	return thickness * density_CH2 / mass_CH2;
+}
+
+/**
+ * Determine the number thickness of the @f${}^{12}\text{C}@f$ target, @f$N_{C,C12}@f$.
+ *
+ * @f[N_{C,C12}=\frac{\rho_{C12}}{m_{C12}}t_{C12}@f]
+ *
+ * @param thickness the thickness of the @f${}^{12}\text{C}@f$, @f$t_{C12}@f$ (cm)
+ * @return the number thickness of carbon, @f$N_{C,C12}@f$
+ * (@f$\frac{\text{mol C}}{\text{cm}^2}@f$)
+ */
+double CalcThickness_C_C12( double thickness )
+{
+	double mass_C = 12;		// u = g/mol
+	double density_C = 2.276;	// g/cm^3
+	return thickness * density_C / mass_C;
 }
 
 /**
@@ -183,9 +201,9 @@ Error<double> CalcNeutronFlux( Error<double> protons, double sigma_np, double nH
 }
 
 /**
- * Calculate the @f$(n,2n)@f$ cross sections, @f$\sigma_{n2n}@f$, 
- * where @f$\lambda_{C11} = \frac{\ln(2)}{20.334~\text{min}}@f$
- * is the C11 decay constant.
+ * Calculate the @f${}^{12}\text{C}(n,2n){}^{11}\text{C}@f$ cross section, 
+ * @f$\sigma_{n2n}@f$, where @f$\lambda_{C11} = \frac{\ln(2)}{20.334~\text{min}}@f$
+ * is the @f${}^{11}\text{C}@f$ decay constant.
  *
  * @f[\sigma_{n2n}=\frac{N_{C11}}{\text{efficiency}}\frac{\lambda_{C11}}
  * {N_{C,tar}N_{flux}\Omega_{tar}(1-e^{-\lambda_{C11}t_{act}})}@f]
@@ -194,7 +212,8 @@ Error<double> CalcNeutronFlux( Error<double> protons, double sigma_np, double nH
  * \sqrt{\left(\frac{\delta_{N_{flux}}}{N_{flux}}\right)^2+
  * \left(\frac{\delta_{N_{C11}}}{N_{C11}}\right)^2}@f]
  * 
- * @param c11 The number of C11 nuclei, @f$N_{C11}@f$ (C11 nuclei)
+ * @param c11 The number of @f${}^{11}\text{C}@f$ nuclei, @f$N_{C11}@f$ 
+ * (@f${}^{11}\text{C}@f$ nuclei)
  * @param flux The neutron flux, @f$N_{flux}@f$ 
  * (@f$\frac{\text{neutrons}}{\text{s}\cdot\text{sr}}@f$)
  * @param efficiency An efficiency correction factor
