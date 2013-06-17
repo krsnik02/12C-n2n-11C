@@ -1,3 +1,14 @@
+/** @file cross_loadsum.C
+ * Copyright (C) 2013 Houghton College
+ *
+ * Copy values from the Run_Summary.csv file into the Cross_Sections.csv file.
+ *
+ * @code
+ * .x n2n/cross_loadsum.C
+ * @endcode
+ */
+
+/// @cond
 {
 gROOT->ProcessLine(".L n2n/cross_section.cxx");
 gROOT->ProcessLine(".L n2n/run_summary.cxx");
@@ -12,3 +23,4 @@ cross->Save( "C:\\2012_12C(n,2n) Data\\ROOT Data\\Cross_Sections.csv" );
 delete sum;
 delete cross;
 }
+/// @endcond

@@ -1,3 +1,14 @@
+/** @file summary_update.C
+ * Copyright (C) 2013 Houghton College
+ *
+ * Update the Run_Summary.csv file.
+ *
+ * @code
+ * .x n2n/summary_update.C
+ * @endcode
+ */
+
+/// @cond
 {
 gROOT->ProcessLine(".L n2n/run_summary.cxx");
 gROOT->ProcessLine(".L n2n/csv_file.cxx");
@@ -10,3 +21,4 @@ sum->Update( "C:\\2012_12C(n,2n) Data\\ROOT Data" );
 sum->Save( "C:\\2012_12C(n,2n) Data\\ROOT Data\\Run_Summary.csv" );
 delete sum;
 }
+/// @endcond
