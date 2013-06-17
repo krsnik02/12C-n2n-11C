@@ -46,7 +46,7 @@ enum CrossSection {
 };
 
 
-struct CrossSection : public csv::CSVFile
+struct CrossSection : public n2n::CSVFile
 {
 	public:
 		/**

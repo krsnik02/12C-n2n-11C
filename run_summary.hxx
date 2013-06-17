@@ -65,7 +65,7 @@ enum RunSummary {
 };
 
 
-struct RunSummary : public csv::CSVFile
+struct RunSummary : public n2n::CSVFile
 {
 	public:
 		/**

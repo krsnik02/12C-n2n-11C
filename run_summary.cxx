@@ -3,8 +3,8 @@
  */
 
 #include "run_summary.hxx"
+#include "proton.hxx"
 #include "decay.hxx"
-#include "proton_good.hxx"
 
 namespace rs {
 

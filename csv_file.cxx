@@ -4,7 +4,7 @@
 
 #include "csv_file.hxx"
 
-namespace csv {
+namespace n2n {
 
 void CSVFile::Load( char const * filename )
 {
@@ -110,4 +110,4 @@ string CSVFile::FormatRow( vector<string> row_vec )
 	return row_str;
 }
 
-} // namespace csv
+} // namespace n2n

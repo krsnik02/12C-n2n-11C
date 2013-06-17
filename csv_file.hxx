@@ -2,9 +2,12 @@
  * Copyright (C) 2013 Houghton College
  */
 
+#ifndef N2N_CSVFILE_INCL_
+#define N2N_CSVFILE_INCL_
+
 #include <vector>
 
-namespace csv {
+namespace n2n {
 
 /**
  * Provides access to CSV formatted data.
@@ -61,4 +64,6 @@ struct CSVFile
 		static string FormatRow( vector<string> row_vec );
 };
 
-} // namespace csv
+} // namespace n2n
+
+#endif
