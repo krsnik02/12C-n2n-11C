@@ -1,4 +1,4 @@
-/** @file proton_good.hxx
+/** @file proton.hxx
  * Copyright (C) 2013 Houghton College 
  */
 

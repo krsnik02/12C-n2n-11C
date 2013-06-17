@@ -1,8 +1,8 @@
-/** @file proton_good.cxx
+/** @file proton.cxx
  * Copyright (C) 2013 Houghton College
  */
 
-#include "proton_good.hxx"
+#include "proton.hxx"
 
 #include <stdexcept>
 

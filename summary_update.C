@@ -1,7 +1,7 @@
 {
 gROOT->ProcessLine(".L n2n/run_summary.cxx");
 gROOT->ProcessLine(".L n2n/csv_file.cxx");
-gROOT->ProcessLine(".L n2n/proton_good.cxx");
+gROOT->ProcessLine(".L n2n/proton.cxx");
 gROOT->ProcessLine(".L n2n/decay.cxx");
 
 rs::RunSummary * sum = new rs::RunSummary();
