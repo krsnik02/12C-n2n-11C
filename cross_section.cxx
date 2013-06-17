@@ -30,14 +30,14 @@ void UpdateSummary( vector<string> & row, rs::RunSummary const * const summary )
 	row[CS_BG_LIVE_TIME] 	= bg[rs::RS_LIVE_TIME];
 
 	// Geometry
-	row[CS_DET_AREA]	= 0.7133;	// cm^2
-	row[CS_DET_DISTANCE]	= 12.07;	// cm
-	row[CS_CH2_AREA]	= 5.067075;	// cm^2
-	row[CS_CH2_DISTANCE]	= 6.46;		// cm
-	row[CS_CH2_THICKNESS]	= 0.164;	// cm
-	row[CS_C12_AREA]	= 43.20869;	// cm^2
-	row[CS_C12_DISTANCE]	= 14.52;	// cm
-	row[CS_C12_THICKNESS]	= 0.889;	// cm
+	row[CS_DET_AREA]	= "0.7133";	// cm^2
+	row[CS_DET_DISTANCE]	= "12.07";	// cm
+	row[CS_CH2_AREA]	= "5.067075";	// cm^2
+	row[CS_CH2_DISTANCE]	= "6.46";	// cm
+	row[CS_CH2_THICKNESS]	= "0.164";	// cm
+	row[CS_C12_AREA]	= "43.20869";	// cm^2
+	row[CS_C12_DISTANCE]	= "14.52";	// cm
+	row[CS_C12_THICKNESS]	= "0.889";	// cm
 
 	// Calculated values
 	row[CS_FG_PROTONS] 	= fg[rs::RS_GROSS_PROTONS];
@@ -206,7 +206,7 @@ Error<double> CalcNeutronFlux( Error<double> protons, double sigma_np, double nH
 	flux.value = protons.value / denom;
 	flux.error = protons.error / denom;
 	return flux;
-}-
+}
 
 /**
  * Calculate the @f${}^{12}\text{C}(n,2n){}^{11}\text{C}@f$ cross section, 

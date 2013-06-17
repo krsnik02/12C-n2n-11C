@@ -1,3 +1,7 @@
+/** @file proton_good.cxx
+ * Copyright (C) 2013 Houghton College
+ */
+
 #include "proton_good.hxx"
 
 #include <stdexcept>
@@ -33,6 +37,63 @@ TH2I * ParseDataFile( char const * const filename )
 	}
 
 	return hist;
+}
+
+Region ParseHeaderFile( char const * const filename )
+{
+	std::ifstream ifs( filename );
+	std::string line;
+	
+	// Check that the file is actually a MPA file
+	std::getline( ifs, line );
+	if ( line.substr( 0, 7 ) != "[MPA4A]" )
+	{
+		std::cerr << "Not a valid MPA file: " << filename << std::endl;
+		throw std::runtime_error( "Invalid file" );
+	}
+
+	// Skip to the [MAP0] section
+	while ( line.substr( 0, 6 ) != "[MAP0]" )
+	{
+		while ( std::getline( ifs, line ) && line[0] != '[' )
+		{
+			// Do nothing
+		}
+	}
+
+	// Parse the [MAP0] section
+	std::string str_xdim, str_roi;
+	while ( std::getline( ifs, line ) && line[0] != '[' )
+	{
+		// Ensure [MAP0] is actually a_2 x a_1
+		if ( line.substr( 0, 6 ) == "param=" && line != "param=1" )
+		{
+			std::cerr << "Expected 'param=1'" << std::endl;
+			std::clog << line << std::endl;
+			return false;
+		}
+
+		// Locate X dimension
+		if ( line.substr( 0, 5 ) == "xdim=" )
+			str_xdim = line;
+
+		// Locate regions of interest
+		if ( line.substr( 0, 4 ) == "roi=" )
+			str_roi = line;
+	}
+
+	// Determine region of interest
+	int xdim, roi_min, roi_max;
+	std::sscanf( str_xdim.c_str(), "xdim=%d", &xdim );
+	std::sscanf( str_roi.c_str(), "roi=%d %d", &roi_min, &roi_max );
+
+	// Calculate region boundaries
+	Region roi;
+	roi.min_x = roi_min - (roi_min / xdim) * xdim;
+	roi.min_y = (roi_min / xdim);
+	roi.max_x = roi_max - (roi_max / xdim) * xdim;
+	roi.max_y = (roi_max / xdim);
+	return roi;
 }
 
 Int_t CountsInRegion( TH2I const * const data, Region const & roi )

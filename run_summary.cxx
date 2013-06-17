@@ -3,6 +3,8 @@
  */
 
 #include "run_summary.hxx"
+#include "decay.hxx"
+#include "proton_good.hxx"
 
 namespace rs {
 
@@ -75,16 +77,16 @@ void UpdateProtons( vector<string> & run, char const * dirname )
 	if ( !gSystem->AccessPathName( filename_csv ) &&
 			!gSystem->AccessPathName( filename_mpa ) )
 	{
-		TNtuple * data = proton::CSVGetData( filename_csv );
-		proton::Region roi = proton::MPAGetROI( filename_mpa );
+		TH2I * data = n2n::proton::ParseDataFile( filename_csv );
+		n2n::Region roi = n2n::proton::ParseHeaderFile( filename_mpa );
+		Int_t protons = n2n::proton::CountsInRegion( data, roi );
+		delete data;
 
-		run[RS_ROI_XMIN] = TString::Format( "%d", roi.xmin );
-		run[RS_ROI_XMAX] = TString::Format( "%d", roi.xmax );
-		run[RS_ROI_YMIN] = TString::Format( "%d", roi.ymin );
-		run[RS_ROI_YMAX] = TString::Format( "%d", roi.ymax );
-
-		run[RS_GROSS_PROTONS] =
-			TString::Format( "%d", data->GetEntries( roi.AsTCut() ) );
+		run[RS_ROI_XMIN] = TString::Format( "%d", roi.min_x );
+		run[RS_ROI_XMAX] = TString::Format( "%d", roi.max_x );
+		run[RS_ROI_YMIN] = TString::Format( "%d", roi.min_y );
+		run[RS_ROI_YMAX] = TString::Format( "%d", roi.max_y );
+		run[RS_GROSS_PROTONS] = TString::Format( "%d", protons );
 	}
 }
 
