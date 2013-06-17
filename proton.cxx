@@ -72,7 +72,7 @@ TNtuple * CSVGetData( char const * filename )
 
 	// Check that this is a valid CSV file
 	std::getline( ifs, line );
-	if ( line != "[DISPLAY]" )
+	if ( line.substr( 0, 9 ) != "[DISPLAY]" )
 	{
 		std::cerr << "Not a valid CSV file: " << filename << std::endl;
 		throw std::runtime_error( "Invalid file" );

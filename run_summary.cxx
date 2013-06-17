@@ -82,6 +82,7 @@ void UpdateProtons( vector<string> & run, char const * dirname )
 		run[RS_ROI_XMAX] = TString::Format( "%d", roi.xmax );
 		run[RS_ROI_YMIN] = TString::Format( "%d", roi.ymin );
 		run[RS_ROI_YMAX] = TString::Format( "%d", roi.ymax );
+
 		run[RS_GROSS_PROTONS] =
 			TString::Format( "%d", data->GetEntries( roi.AsTCut() ) );
 	}

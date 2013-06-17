@@ -35,7 +35,7 @@ void UpdateSummary( vector<string> & row, rs::RunSummary const * const summary )
 	row[CS_CH2_AREA]	= 5.067075;	// cm^2
 	row[CS_CH2_DISTANCE]	= 6.46;		// cm
 	row[CS_CH2_THICKNESS]	= 0.164;	// cm
-	row[CS_C12_AREA]	= 4.320869;	// cm^2
+	row[CS_C12_AREA]	= 43.20869;	// cm^2
 	row[CS_C12_DISTANCE]	= 14.52;	// cm
 	row[CS_C12_THICKNESS]	= 0.889;	// cm
 
@@ -87,14 +87,15 @@ Error<double> CalcProtonFlux( int fg_protons, int bg_protons, double fg_live, do
  * by interpolating between known cross sections.
  *
  * @param energy The kinetic energy, @f$T@f$ (MeV)
- * @return The cross section, @f$\sigma_{np}(T)@f$	(mb/sr)
+ * @return The cross section, @f$\sigma_{np}(T)@f$ 
+ * (@f$\frac{\text{mbarn}}{\text{sr}}@f$)
  */
 double CalcNPCrossSection( double energy )
 {
 	// Data from http://nn-online.org/
 	// Lab frame
 	double energies[] = {  20,  22,  24,  26,  28 };	// (MeV)
-	double xsects[]   = { 153, 139, 128, 119, 111 };	// (mb/sr)
+	double xsects[]   = { 153, 139, 128, 119, 111 };	// (mbarn/sr)
 
 	ROOT::Math::Interpolator interp( 5 );
 	interp.SetData( 5, energies, xsects );
@@ -102,23 +103,25 @@ double CalcNPCrossSection( double energy )
 }
 
 /**
- * Determine the thickness of the @f$\text{CH}_2@f$ target, @f$N_{H,CH_2}@f$ 
- * (@f$\frac{\text{H nuclei}}{\mathrm{cm}^2}@f$).
+ * Determine the number thickness of the @f$\text{CH}_2@f$ target, @f$N_{H,CH_2}@f$.
  *
  * @f[N_{H,CH_2}=2\frac{\rho_{CH_2}}{m_{CH_2}}t_{CH_2}@f]
  *
  * @param thickness the thickness of the @f$\text{CH}_2@f$, @f$t_{CH_2}@f$ (cm)
  * @return the number thickness of hydrogen, @f$N_{H,CH_2}@f$ 
- * (@f$\frac{\text{mol H}}{\mathrm{cm}^2}@f$)
+ * (@f$\frac{\text{H nuclei}}{\text{barn}}@f$)
  */
 double CalcThickness_H_CH2( double thickness )
 {
-	double mass_H = 1.007825;	// u = g/mol
-	double mass_C = 12;		// u = g/mol
+	double mass_H = 1.007825;	// u
+	double mass_C = 12;		// u
 	double mass_CH2 = 2 * mass_H + mass_C;
 	double density_CH2 = 0.89;	// g/cm^3
 
-	return 2 * thickness * density_CH2 / mass_CH2;
+	// 1 u = 1.6605389e-24 g
+	// 1 barn = 1e-24 cm^2
+	// 1 u/cm^2 = 1.6605389 g/barn
+	return 2 * thickness * density_CH2 / (mass_CH2 * 1.6605389);
 }
 
 /**
@@ -128,16 +131,19 @@ double CalcThickness_H_CH2( double thickness )
  *
  * @param thickness the thickness of the @f$\text{CH}_2@f$, @f$t_{CH_2}@f$ (cm)
  * @return the number thickness of carbon, @f$N_{C,CH_2}@f$ 
- * (@f$\frac{\text{mol C}}{\text{cm}^2}@f$)
+ * (@f$\frac{\text{C nuclei}}{\text{barn}}@f$)
  */
 double CalcThickness_C_CH2( double thickness )
 {
-	double mass_H = 1.007825;	// u = g/mol
-	double mass_C = 12;		// u = g/mol
+	double mass_H = 1.007825;	// u
+	double mass_C = 12;		// u
 	double mass_CH2 = 2 * mass_H + mass_C;
 	double density_CH2 = 0.89;	// g/cm^3
 
-	return thickness * density_CH2 / mass_CH2;
+	// 1 u = 1.6605389e-24 g
+	// 1 barn = 1e-24 cm^2
+	// 1 u/cm^2 = 1.6605389 g/barn
+	return thickness * density_CH2 / (mass_CH2 * 1.6605389);
 }
 
 /**
@@ -147,13 +153,17 @@ double CalcThickness_C_CH2( double thickness )
  *
  * @param thickness the thickness of the @f${}^{12}\text{C}@f$, @f$t_{C12}@f$ (cm)
  * @return the number thickness of carbon, @f$N_{C,C12}@f$
- * (@f$\frac{\text{mol C}}{\text{cm}^2}@f$)
+ * (@f$\frac{\text{C nuclei}}{\text{barn}}@f$)
  */
 double CalcThickness_C_C12( double thickness )
 {
-	double mass_C = 12;		// u = g/mol
+	double mass_C = 12;		// u
 	double density_C = 2.276;	// g/cm^3
-	return thickness * density_C / mass_C;
+
+	// 1 u = 1.6605389e-24 g
+	// 1 barn = 1e-24 cm^2
+	// 1 u/cm^2 = 1.6605389 g/barn
+	return thickness * density_C / (mass_C * 1.6605389); 
 }
 
 /**
@@ -178,9 +188,9 @@ double CalcSolidAngle( double area, double dist )
  *
  * @param protons The proton flux, @f$N_p@f$ (@f$\frac{\text{protons}}{\text{s}}@f$)
  * @param sigma_np The cross section of the @f$(n,p)@f$ reaction, @f$\sigma_{np}@f$ 
- * (@f$\frac{\text{mb}}{\text{sr}}@f$)
+ * (@f$\frac{\text{mbarn}}{\text{sr}}@f$)
  * @param nH_ch2 The number thickness of hydrogen, @f$N_{H,CH_2}@f$ 
- * (@f$\frac{\text{mol H}}{\text{cm}^2}@f$)
+ * (@f$\frac{\text{H nuclei}}{\text{barn}}@f$)
  * @param sang_det The solid angle of the proton detector, @f$\Omega_{det}@f$ (sr)
  * @param sang_ch2 The solid angle of the ch2 target, @f$\Omega_{CH_2}@f$ (sr)
  * @return The neutron flux, @f$N_{flux}@f$ 
@@ -189,16 +199,14 @@ double CalcSolidAngle( double area, double dist )
 Error<double> CalcNeutronFlux( Error<double> protons, double sigma_np, double nH_ch2,
 		double sang_det, double sang_ch2 )
 {
-	// 1 mb = 1e-27 cm^2
-	// 1 mol = 6.0231415e23 nuclei
-	// 6.0231415e23 * 1e-27 = 6.0231415e-4
-	double denom = sigma_np * nH_ch2 * sang_det * sang_ch2 * 6.0231415e-4;
+	// 1 mbarn = 1e-3 barn
+	double denom = sigma_np * nH_ch2 * sang_det * sang_ch2 * 1e-3;
 
 	Error<double> flux;
 	flux.value = protons.value / denom;
 	flux.error = protons.error / denom;
 	return flux;
-}
+}-
 
 /**
  * Calculate the @f${}^{12}\text{C}(n,2n){}^{11}\text{C}@f$ cross section, 
@@ -219,7 +227,7 @@ Error<double> CalcNeutronFlux( Error<double> protons, double sigma_np, double nH
  * @param efficiency An efficiency correction factor
  * @param time The total activation time, @f$t_{act}@f$ (s)
  * @param thickness The number thickness of carbon in target, @f$N_{C,tar}@f$ 
- * (@f$\frac{\text{mol C}}{\text{cm}^2}@f$)
+ * (@f$\frac{\text{C nuclei}}{\text{barn}}@f$)
  * @param sang The solid angle of target, @f$\Omega_{tar}@f$ (sr)
  * @return The cross section, @f$\sigma_{n2n}@f$ (mb)
  */
@@ -229,10 +237,8 @@ Error<double> CalcN2NCrossSection( Error<double> c11, Error<double> flux,
 	// 1 min = 60 s
 	double decay = TMath::Log( 2 ) / (20.334 * 60);	// (1/s)
 
-	// 1 mb = 1e-27 cm^2
-	// 1 mol = 6.0231415e23 nuclei
-	// 6.0231415e23 * 1e-27 = 6.0231415e-4
-	double denom = thicknes * flux.value * sang * 6.0231415e-4
+	// 1 mbarn = 1e-3 barn
+	double denom = thickness * flux.value * sang * 1e-3
 		* (1 - TMath::Exp( -decay * time ));
 
 	Error<double> xsect;

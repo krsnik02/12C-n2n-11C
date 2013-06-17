@@ -18,8 +18,8 @@ struct Region
 	{
 		TCut cut_xmin = TString::Format( "x >= %d", xmin );
 		TCut cut_ymin = TString::Format( "y >= %d", ymin );
-		TCut cut_xmax = TString::Format( "x < %d", xmax );
-		TCut cut_ymax = TString::Format( "y < %d", ymax );
+		TCut cut_xmax = TString::Format( "x <= %d", xmax );
+		TCut cut_ymax = TString::Format( "y <= %d", ymax );
 		return cut_xmin && cut_ymin && cut_xmax && cut_ymax;	
 	}
 };
