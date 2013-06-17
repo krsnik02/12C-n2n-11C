@@ -4,29 +4,9 @@
  * experiment to determine the cross section of the 
  * @f${}^{12}@f$C(n,2n)@f${}^{11}@f$C reaction.
  *
- * @note
- * Usage:
- * @code {.cxx}
- * // Load the Run_Summary.csv file
- * .L c12/run_summary.cxx
- * .L c12/csv_file.cxx
- * rs::RunSummary * summary = new rs::RunSummary();
- * summary->Load( "C:\\2012_12C(n,2n) Data\\ROOT Data\\Run_Summary.csv" );
- *
- * // Update the Run_Summary.csv file
- * .L c12/decay.cxx
- * .L c12/proton.cxx
- * summary->Update( "C:\\2012_12C(n,2n) Data\\ROOT Data" );
- * summary->Save( "C:\\2012_12C(n,2n) Data\\ROOT Data\\Run_Summary.csv" );
- *
- * // Load the Cross_Sections.csv file
- * .L c12/cross_section.cxx
- * cs::CrossSection * cross = new cs::CrossSection();
- * cross->Load( "C:\\2012_12C(n,2n) Data\\ROOT Data\\Cross_Sections.csv" );
- *
- * // Update the Cross_Sections.csv file
- * cross->LoadSummary( summary );
- * cross->Calculate();
- * cross->Save( "C:\\2012_12C(n,2n) Data\\ROOT Data\\Cross_Sections.csv" );
- * @endcode
+ * @note Usage:
+ * @note Run one of n2n/summary_update.C, n2n/cross_loadsum.C, or
+ * n2n/cross_calculate.C in ROOT. 
+ * @note To fully recalculate all cross sections, run all three of these 
+ * macros in the listed order.
  */
