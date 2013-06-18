@@ -44,9 +44,9 @@ void UpdateC11( vector<string> & run, char const * dirname )
 	// http://root.cern.ch/root/html/TSystem.html#TSystem:AccessPathName
 	if ( !gSystem->AccessPathName( filename_puck ) )
 	{
-		TGraphErrors * ge = n2n::decay::ParseDataFile( filename_puck );
-		TFitResultPtr fr = n2n::decay::FitDecayCurve( ge );
-		n2n::Error<Double_t> n_c11 = n2n::decay::Counts( fr, trans_time, efficiency );
+		TGraphErrors * ge = decay::ParseDataFile( filename_puck );
+		TFitResultPtr fr = decay::FitDecayCurve( ge );
+		Error<Double_t> n_c11 = decay::Counts( fr, trans_time, efficiency );
 		delete ge;
 
 		run[n2n::RS_C11_PUCK] = TString::Format( "%f", n_c11.value );
@@ -55,9 +55,9 @@ void UpdateC11( vector<string> & run, char const * dirname )
 
 	if ( !gSystem->AccessPathName( filename_plastic ) )
 	{
-		TGraphErrors * ge = n2n::decay::ParseDataFile( filename_plastic );
-		TFitResultPtr fr = n2n::decay::FitDecayCurve( ge );
-		n2n::Error<Double_t> n_c11 = n2n::decay::Counts( fr, trans_time, efficiency );
+		TGraphErrors * ge = decay::ParseDataFile( filename_plastic );
+		TFitResultPtr fr = decay::FitDecayCurve( ge );
+		Error<Double_t> n_c11 = decay::Counts( fr, trans_time, efficiency );
 		delete ge;
 
 		run[n2n::RS_C11_PLASTIC] = TString::Format( "%f", n_c11.value );
@@ -80,9 +80,9 @@ void UpdateProtons( vector<string> & run, char const * dirname )
 	if ( !gSystem->AccessPathName( filename_csv ) &&
 			!gSystem->AccessPathName( filename_mpa ) )
 	{
-		TH2I * data = n2n::proton::ParseDataFile( filename_csv );
-		n2n::Region roi = n2n::proton::ParseHeaderFile( filename_mpa );
-		Int_t protons = n2n::proton::CountsInRegion( data, roi );
+		TH2I * data = proton::ParseDataFile( filename_csv );
+		Region roi = proton::ParseHeaderFile( filename_mpa );
+		Int_t protons = proton::CountsInRegion( data, roi );
 		delete data;
 
 		run[n2n::RS_ROI_XMIN] = TString::Format( "%d", roi.min_x );

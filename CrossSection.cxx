@@ -69,9 +69,9 @@ void CrossSection::LoadSummary( RunSummary const * const summary )
  * @param bg_live Live time of background, @f$t_{live,bg}@f$ (s)
  * @return The proton flux, @f$N_p@f$ (@f$\frac{\text{protons}}{\text{s}}@f$)
  */
-n2n::Error<double> CalcProtonFlux( int fg_protons, int bg_protons, double fg_live, double bg_live )
+Error<double> CalcProtonFlux( int fg_protons, int bg_protons, double fg_live, double bg_live )
 {
-	n2n::Error<double> protons;
+	Error<double> protons;
 	protons.value = (fg_protons / fg_live) - (bg_protons / bg_live);
 	protons.error = sqrt( pow( sqrt( fg_protons ) / fg_live, 2 ) +
 			pow( sqrt( bg_protons ) / bg_live, 2 ) );
@@ -192,13 +192,13 @@ double CalcSolidAngle( double area, double dist )
  * @return The neutron flux, @f$N_{flux}@f$ 
  * (@f$\frac{\text{neutrons}}{\text{s}\cdot\text{sr}}@f$)
  */
-n2n::Error<double> CalcNeutronFlux( n2n::Error<double> protons, double sigma_np, double nH_ch2,
+Error<double> CalcNeutronFlux( Error<double> protons, double sigma_np, double nH_ch2,
 		double sang_det, double sang_ch2 )
 {
 	// 1 mbarn = 1e-3 barn
 	double denom = sigma_np * nH_ch2 * sang_det * sang_ch2 * 1e-3;
 
-	n2n::Error<double> flux;
+	Error<double> flux;
 	flux.value = protons.value / denom;
 	flux.error = protons.error / denom;
 	return flux;
@@ -227,7 +227,7 @@ n2n::Error<double> CalcNeutronFlux( n2n::Error<double> protons, double sigma_np,
  * @param sang The solid angle of target, @f$\Omega_{tar}@f$ (sr)
  * @return The cross section, @f$\sigma_{n2n}@f$ (mb)
  */
-n2n::Error<double> CalcN2NCrossSection( n2n::Error<double> c11, n2n::Error<double> flux, 
+Error<double> CalcN2NCrossSection( Error<double> c11, Error<double> flux, 
 		double efficiency, double time, double thickness, double sang )
 {	
 	// 1 min = 60 s
@@ -237,7 +237,7 @@ n2n::Error<double> CalcN2NCrossSection( n2n::Error<double> c11, n2n::Error<doubl
 	double denom = thickness * flux.value * sang * 1e-3
 		* (1 - TMath::Exp( -decay * time ));
 
-	n2n::Error<double> xsect;
+	Error<double> xsect;
 	xsect.value = c11.value * decay / (efficiency * denom);
 	xsect.error = xsect.value * sqrt( pow( flux.error / flux.value, 2 ) +
 			pow( c11.error / c11.value, 2 ) );
@@ -278,28 +278,28 @@ void CrossSection::Calculate()
 		// Calculated data
 		int fg_protons = atoi( row[CS_FG_PROTONS].c_str() );
 		int bg_protons = atoi( row[CS_BG_PROTONS].c_str() );
-		n2n::Error<double> c11_c12;
+		Error<double> c11_c12;
 		c11_c12.value = atof( row[CS_C11_C12].c_str() );
 		c11_c12.error = atof( row[CS_C11_C12_ERR].c_str() );
-		n2n::Error<double> c11_ch2;
+		Error<double> c11_ch2;
 		c11_ch2.value = atof( row[CS_C11_CH2].c_str() );
 		c11_ch2.error = atof( row[CS_C11_CH2_ERR].c_str() );
 
 		// Calculate the flux
-		n2n::Error<double> protons = 
+		Error<double> protons = 
 			n2n::CalcProtonFlux( fg_protons, bg_protons, fg_live, bg_live );
 		row[CS_PROTON_FLUX]     = TString::Format( "%f", protons.value );
 		row[CS_PROTON_FLUX_ERR] = TString::Format( "%f", protons.error );
 
-		n2n::Error<double> neutrons = 
+		Error<double> neutrons = 
 			n2n::CalcNeutronFlux( protons, sigma_np, nH_ch2, sang_det, sang_ch2 );
 		row[CS_NEUTRON_FLUX]     = TString::Format( "%f", neutrons.value );
 		row[CS_NEUTRON_FLUX_ERR] = TString::Format( "%f", neutrons.error );
 
 		// Caclulate cross sections
-		n2n::Error<double> sigma_n2n_ch2 =
+		Error<double> sigma_n2n_ch2 =
 			n2n::CalcN2NCrossSection( c11_ch2, neutrons, 5.83, clock, nC_ch2, sang_ch2 );
-		n2n::Error<double> sigma_n2n_c12 =
+		Error<double> sigma_n2n_c12 =
 			n2n::CalcN2NCrossSection( c11_c12, neutrons, 1, clock, nC_c12, sang_c12 );
 		row[CS_XSECT_N2N_CH2]     = TString::Format( "%f", sigma_n2n_ch2.value );
 		row[CS_XSECT_N2N_CH2_ERR] = TString::Format( "%f", sigma_n2n_ch2.error );
