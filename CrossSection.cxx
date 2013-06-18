@@ -8,6 +8,9 @@
 
 namespace n2n {
 
+/**
+ * Update the CrossSection file with values from a RunSummary file.
+ */
 void UpdateSummary( vector<string> & row, RunSummary const * const summary )
 {
 	int fg_run_number = atoi( row[CS_FG_RUN_NUMBER].c_str() );
@@ -109,7 +112,7 @@ double CalcNPCrossSection( double energy )
  */
 double CalcSolidAngle( double area, double dist )
 {
-	return area / pow( dist, 2 );
+	return area / (dist * dist);
 }
 
 /**
@@ -163,12 +166,12 @@ Error<double> CalcN2NCrossSection( Target * target, Error<double> neutrons, doub
 	double decay = TMath::Log( 2 ) / (20.334 * 60);	// (1/s)
 
 	// 1 mbarn = 1e-3 barn
-	double denom = target->ThicknessC() * flux.value * target->SolidAngle() * 1e-3
+	double denom = target->ThicknessC() * neutrons.value * target->SolidAngle() * 1e-3
 		* (1 - TMath::Exp( -decay * time ));
 
 	Error<double> xsect;
 	xsect.value = target->c11.value * decay / (efficiency * denom);
-	xsect.error = xsect.value * sqrt( pow( flux.error / flux.value, 2 ) +
+	xsect.error = xsect.value * sqrt( pow( neutrons.error / neutrons.value, 2 ) +
 			pow( target->c11.error / target->c11.value, 2 ) );
 	return xsect;
 }
