@@ -8,7 +8,7 @@
 
 namespace cs {
 
-void UpdateSummary( vector<string> & row, rs::RunSummary const * const summary )
+void UpdateSummary( vector<string> & row, n2n::RunSummary const * const summary )
 {
 	int fg_run_number = atoi( row[CS_FG_RUN_NUMBER].c_str() );
 	int bg_run_number = atoi( row[CS_BG_RUN_NUMBER].c_str() );
@@ -16,14 +16,14 @@ void UpdateSummary( vector<string> & row, rs::RunSummary const * const summary )
 	vector<string> bg = summary->GetRun( bg_run_number );
 
 	assert( row.size() == CS_NUM_COLUMNS );
-	assert( fg.size() == rs::RS_NUM_COLUMNS );
-	assert( bg.size() == rs::RS_NUM_COLUMNS );
+	assert( fg.size() == n2n::RS_NUM_COLUMNS );
+	assert( bg.size() == n2n::RS_NUM_COLUMNS );
 
 	// Run data
-	row[CS_NEUTRON_ENERGY] 	= fg[rs::RS_NEUTRON_ENERGY];
-	row[CS_CLOCK_TIME]	= fg[rs::RS_CLOCK_TIME];
-	row[CS_FG_LIVE_TIME] 	= fg[rs::RS_LIVE_TIME];
-	row[CS_BG_LIVE_TIME] 	= bg[rs::RS_LIVE_TIME];
+	row[CS_NEUTRON_ENERGY] 	= fg[n2n::RS_NEUTRON_ENERGY];
+	row[CS_CLOCK_TIME]	= fg[n2n::RS_CLOCK_TIME];
+	row[CS_FG_LIVE_TIME] 	= fg[n2n::RS_LIVE_TIME];
+	row[CS_BG_LIVE_TIME] 	= bg[n2n::RS_LIVE_TIME];
 
 	// Geometry
 	row[CS_DET_AREA]	= "0.7133";	// cm^2
@@ -36,15 +36,15 @@ void UpdateSummary( vector<string> & row, rs::RunSummary const * const summary )
 	row[CS_C12_THICKNESS]	= "0.889";	// cm
 
 	// Calculated values
-	row[CS_FG_PROTONS] 	= fg[rs::RS_GROSS_PROTONS];
-	row[CS_BG_PROTONS] 	= bg[rs::RS_GROSS_PROTONS];
-	row[CS_C11_C12]		= fg[rs::RS_C11_PUCK];
-	row[CS_C11_C12_ERR]	= fg[rs::RS_C11_PUCK_ERR];
-	row[CS_C11_CH2]		= fg[rs::RS_C11_PLASTIC];
-	row[CS_C11_CH2_ERR]	= fg[rs::RS_C11_PLASTIC_ERR];
+	row[CS_FG_PROTONS] 	= fg[n2n::RS_GROSS_PROTONS];
+	row[CS_BG_PROTONS] 	= bg[n2n::RS_GROSS_PROTONS];
+	row[CS_C11_C12]		= fg[n2n::RS_C11_PUCK];
+	row[CS_C11_C12_ERR]	= fg[n2n::RS_C11_PUCK_ERR];
+	row[CS_C11_CH2]		= fg[n2n::RS_C11_PLASTIC];
+	row[CS_C11_CH2_ERR]	= fg[n2n::RS_C11_PLASTIC_ERR];
 }
 
-void CrossSection::LoadSummary( rs::RunSummary const * const summary )
+void CrossSection::LoadSummary( n2n::RunSummary const * const summary )
 {
 	for ( int i = 3; i < NumRows(); ++i )
 	{

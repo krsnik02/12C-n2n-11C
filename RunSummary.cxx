@@ -7,18 +7,18 @@
 #include "proton.hxx"
 #include "decay.hxx"
 
-namespace rs {
+namespace n2n {
 
 vector<string> RunSummary::GetRun( int run_number ) const
 {
 	vector<string> row = GetRow( run_number + 2 );
-	assert( atoi( row[RS_RUN_NUMBER].c_str() ) == run_number );
+	assert( atoi( row[n2n::RS_RUN_NUMBER].c_str() ) == run_number );
 	return row;
 }
 
 void RunSummary::SetRun( int run_number, vector<string> const & row )
 {
-	assert( atoi( row[RS_RUN_NUMBER].c_str() ) == run_number );
+	assert( atoi( row[n2n::RS_RUN_NUMBER].c_str() ) == run_number );
 	SetRow( run_number + 2, row );
 }
 
@@ -29,7 +29,7 @@ int RunSummary::NumRuns() const
 
 void UpdateC11( vector<string> & run, char const * dirname )
 {
-	int run_number = atoi( run[RS_RUN_NUMBER].c_str() );
+	int run_number = atoi( run[n2n::RS_RUN_NUMBER].c_str() );
 	char const * filename_puck = 
 		gSystem->PrependPathName( dirname,
 				TString::Format( "Run%03d_puck.csv", run_number ) );
@@ -37,7 +37,7 @@ void UpdateC11( vector<string> & run, char const * dirname )
 		gSystem->PrependPathName( dirname,
 				TString::Format( "Run%03d_plastic.csv", run_number ) );
 
-	double trans_time = atoi( run[RS_INTERIM_TIME].c_str() ) / 60.0;	// min
+	double trans_time = atoi( run[n2n::RS_INTERIM_TIME].c_str() ) / 60.0;	// min
 	double efficiency = 0.12;
 	
 	// NOTE: TSystem::AccessPathName returns *false* if the file exists!
@@ -49,8 +49,8 @@ void UpdateC11( vector<string> & run, char const * dirname )
 		n2n::Error<Double_t> n_c11 = n2n::decay::Counts( fr, trans_time, efficiency );
 		delete ge;
 
-		run[RS_C11_PUCK] = TString::Format( "%f", n_c11.value );
-		run[RS_C11_PUCK_ERR] = TString::Format( "%f", n_c11.error );
+		run[n2n::RS_C11_PUCK] = TString::Format( "%f", n_c11.value );
+		run[n2n::RS_C11_PUCK_ERR] = TString::Format( "%f", n_c11.error );
 	}
 
 	if ( !gSystem->AccessPathName( filename_plastic ) )
@@ -60,14 +60,14 @@ void UpdateC11( vector<string> & run, char const * dirname )
 		n2n::Error<Double_t> n_c11 = n2n::decay::Counts( fr, trans_time, efficiency );
 		delete ge;
 
-		run[RS_C11_PLASTIC] = TString::Format( "%f", n_c11.value );
-		run[RS_C11_PLASTIC_ERR] = TString::Format( "%f", n_c11.error );
+		run[n2n::RS_C11_PLASTIC] = TString::Format( "%f", n_c11.value );
+		run[n2n::RS_C11_PLASTIC_ERR] = TString::Format( "%f", n_c11.error );
 	}
 }
 
 void UpdateProtons( vector<string> & run, char const * dirname )
 {
-	int run_number = atoi( run[RS_RUN_NUMBER].c_str() );
+	int run_number = atoi( run[n2n::RS_RUN_NUMBER].c_str() );
 	char const * filename_csv =
 		gSystem->PrependPathName( dirname,
 				TString::Format( "Run%03d_1x2.csv", run_number ) );
@@ -85,11 +85,11 @@ void UpdateProtons( vector<string> & run, char const * dirname )
 		Int_t protons = n2n::proton::CountsInRegion( data, roi );
 		delete data;
 
-		run[RS_ROI_XMIN] = TString::Format( "%d", roi.min_x );
-		run[RS_ROI_XMAX] = TString::Format( "%d", roi.max_x );
-		run[RS_ROI_YMIN] = TString::Format( "%d", roi.min_y );
-		run[RS_ROI_YMAX] = TString::Format( "%d", roi.max_y );
-		run[RS_GROSS_PROTONS] = TString::Format( "%d", protons );
+		run[n2n::RS_ROI_XMIN] = TString::Format( "%d", roi.min_x );
+		run[n2n::RS_ROI_XMAX] = TString::Format( "%d", roi.max_x );
+		run[n2n::RS_ROI_YMIN] = TString::Format( "%d", roi.min_y );
+		run[n2n::RS_ROI_YMAX] = TString::Format( "%d", roi.max_y );
+		run[n2n::RS_GROSS_PROTONS] = TString::Format( "%d", protons );
 	}
 }
 
@@ -99,10 +99,10 @@ void RunSummary::Update( char const * dirname )
 	for ( int i = 1; i < NumRuns(); ++i )
 	{
 		vector<string> run = GetRun( i );
-		rs::UpdateC11( run, gSystem->PrependPathName( dirname, "Decay Curves" ) );
-		rs::UpdateProtons( run, gSystem->PrependPathName( dirname, "Proton Telescope" ) );
+		n2n::UpdateC11( run, gSystem->PrependPathName( dirname, "Decay Curves" ) );
+		n2n::UpdateProtons( run, gSystem->PrependPathName( dirname, "Proton Telescope" ) );
 		SetRun( i, run );
 	}
 }
 
-} // namespace rs
+} // namespace n2n

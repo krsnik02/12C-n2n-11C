@@ -3,9 +3,12 @@
  * Copyright (C) 2013 Houghton College
  */
 
+#ifndef N2N_RUNSUMMARY_INCL_
+#define N2N_RUNSUMMARY_INCL_
+
 #include "CSVFile.hxx"
 
-namespace rs {
+namespace n2n {
 
 /**
  * Run summary column names
@@ -66,7 +69,7 @@ enum RSFields {
 };
 
 
-struct RunSummary : public n2n::CSVFile
+struct RunSummary : public CSVFile
 {
 	public:
 		/**
@@ -95,4 +98,6 @@ struct RunSummary : public n2n::CSVFile
 		void Update( char const * dirname );
 };
 
-} // namespace rs
+} // namespace n2n
+
+#endif

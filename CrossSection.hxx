@@ -54,7 +54,7 @@ struct CrossSection : public n2n::CSVFile
 		 * Copy values from Run_Summary.csv file into the Cross_Sections.csv file
 		 * @param summary The run summary to use
 		 */
-		void LoadSummary( rs::RunSummary const * const summary );
+		void LoadSummary( n2n::RunSummary const * const summary );
 
 		/**
 		 * Calculate cross sections based on the values in Cross_Sections.csv

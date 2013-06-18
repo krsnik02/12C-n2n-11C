@@ -15,7 +15,7 @@ gROOT->ProcessLine(".L n2n/RunSummary.cxx");
 gROOT->ProcessLine(".L n2n/CSVFile.cxx");
 
 cs::CrossSection * cross = new cs::CrossSection();
-rs::RunSummary * sum = new rs::RunSummary();
+n2n::RunSummary * sum = new n2n::RunSummary();
 cross->Load( "C:\\2012_12C(n,2n) Data\\ROOT Data\\Cross_Sections.csv" );
 sum->Load( "C:\\2012_12C(n,2n) Data\\ROOT Data\\Run_Summary.csv" );
 cross->LoadSummary( sum );
