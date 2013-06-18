@@ -254,7 +254,7 @@ void CrossSection::Calculate()
 		double clock   = atof( row[CS_CLOCK_TIME].c_str() );
 		double fg_live = atof( row[CS_FG_LIVE_TIME].c_str() );
 		double bg_live = atof( row[CS_BG_LIVE_TIME].c_str() );
-		double energy  = atoi( row[CS_NEUTRON_ENERGY].c_str() );
+		double energy  = atof( row[CS_NEUTRON_ENERGY].c_str() );
 
 		double sigma_np = cs::CalcNPCrossSection( energy );
 
