@@ -10,7 +10,7 @@
 
 /// @cond
 {
-gROOT->ProcessLine(".L n2n/cross_section.cxx");
+gROOT->ProcessLine(".L n2n/CrossSection.cxx");
 gROOT->ProcessLine(".L n2n/RunSummary.cxx");
 gROOT->ProcessLine(".L n2n/CSVFile.cxx");
 

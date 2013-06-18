@@ -1,4 +1,5 @@
-/** @file cross_section.hxx
+/** 
+ * @file n2n/CrossSection.hxx
  * Copyright (C) 2013 Houghton College
  */
 
@@ -10,7 +11,7 @@ namespace cs {
 /**
  * Cross Section column names
  */
-enum CrossSection {
+enum CSFields {
 	CS_FG_RUN_NUMBER,	///< Run number of foreground run
 	CS_BG_RUN_NUMBER,	///< Run number of background run
 	CS_NEUTRON_ENERGY,	///< Neutron energy (MeV)
