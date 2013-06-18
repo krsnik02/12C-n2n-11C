@@ -43,22 +43,24 @@ void UpdateC11( vector<string> & run, char const * dirname )
 	// http://root.cern.ch/root/html/TSystem.html#TSystem:AccessPathName
 	if ( !gSystem->AccessPathName( filename_puck ) )
 	{
-		TGraphErrors * ge = decay::CSVGetData( filename_puck );
-		TFitResultPtr fr = decay::Fit( ge );
-		run[RS_C11_PUCK] = 
-			TString::Format( "%f", decay::GetCount( fr, trans_time, efficiency ) );
-		run[RS_C11_PUCK_ERR] = 
-			TString::Format( "%f", decay::GetError( fr, trans_time, efficiency ) );
+		TGraphErrors * ge = n2n::decay::ParseDataFile( filename_puck );
+		TFitResultPtr fr = n2n::decay::FitDecayCurve( ge );
+		n2n::Error<Double_t> n_c11 = n2n::decay::Counts( fr, trans_time, efficiency );
+		delete ge;
+
+		run[RS_C11_PUCK] = TString::Format( "%f", n_c11.value );
+		run[RS_C11_PUCK_ERR] = TString::Format( "%f", n_c11.error );
 	}
 
 	if ( !gSystem->AccessPathName( filename_plastic ) )
 	{
-		TGraphErrors * ge = decay::CSVGetData( filename_plastic );
-		TFitResultPtr fr = decay::Fit( ge );
-		run[RS_C11_PLASTIC] = 
-			TString::Format( "%f", decay::GetCount( fr, trans_time, efficiency ) );
-		run[RS_C11_PLASTIC_ERR] = 
-			TString::Format( "%f", decay::GetError( fr, trans_time, efficiency ) );
+		TGraphErrors * ge = n2n::decay::ParseDataFile( filename_plastic );
+		TFitResultPtr fr = n2n::decay::FitDecayCurve( ge );
+		n2n::Error<Double_t> n_c11 = n2n::decay::Counts( fr, trans_time, efficiency );
+		delete ge;
+
+		run[RS_C11_PLASTIC] = TString::Format( "%f", n_c11.value );
+		run[RS_C11_PLASTIC_ERR] = TString::Format( "%f", n_c11.error );
 	}
 }
 

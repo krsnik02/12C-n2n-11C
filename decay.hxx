@@ -2,6 +2,21 @@
  * Copyright (C) 2013 Houghton College
  */
 
+#ifndef N2N_DECAY_INCL_
+#define N2N_DECAY_INCL_
+
+namespace n2n {
+
+/**
+ * A value and its uncertainty.
+ */
+template <typename T>
+struct Error
+{
+	T value;	///< The value
+	T error;	///< The uncertainty in the value
+};
+
 namespace decay {
 
 /**
@@ -15,47 +30,33 @@ namespace decay {
  * @return A TGraphErrors object containing the input decay curve. 
  * The error is calculated to be the square root of the number of counts.
  */
-TGraphErrors * CSVGetData( char const * filename );
+TGraphErrors * ParseDataFile( char const * filename );
 
 /**
  * Fit an exponential decay curve to a TGraphErrors object.
  * The decay curve is given by @f$N_0 e^{-\lambda t}+A@f$.
- *
+
  * @param ge The TGraphErrors object to be fit.
- * 
+
  * @return A TFitResultPtr containing the results of the fit.
  */
-TFitResultPtr Fit( TGraphErrors * ge );
+TFitResultPtr FitDecayCurve( TGraphErrors * ge );
 
 /**
- * Calculate the total number of C11 originally in the sample.
- * This count is given by @f$\frac{N_0e^{\lambda\,\cdot\,\mathrm{trans\_time}}}
- * {\lambda\,\cdot\,\mathrm{efficiency}}@f$.
+ * Calculate the total number of C11 originally in the sample, @f$N_{C11}@f$.
  *
- * To get the uncertainty in this value, use @ref GetError.
+ * @f[N_{C11}=\frac{N_0e^{\lambda\,t_{trans}}}{\lambda\cdot\text{eff}}@f]
+ * @f[\delta_{N_{C11}}=\frac{\delta_{N_0}e^{\lambda\,t_{trans}}}{\lambda\cdot\text{eff}}@f]
  *
- * @param fr	The TFitResultPtr returned by @ref Fit.
- * @param trans_time	The elapsed time before counting began
- * @param efficiency	The efficiency of counting in this sample
+ * @param fr The TFitResultPtr returned by @ref FitDecayCurve.
+ * @param trans_time The elapsed time before counting began, @f$t_{trans}@f$
+ * @param efficiency The efficiency of counting in this sample, @f$\text{eff}@f$
  *
  * @return The total number of C11 originally present in the sample.
  */
-Double_t GetCount( TFitResultPtr fr, Double_t trans_time, Double_t efficiency );
-
-/**
- * Calculate the uncertainty in the total number of C11.
- * The uncertainty is given by
- * @f$\frac{\delta_{N_0}e^{\lambda\,\cdot\,\mathrm{trans\_time}}}
- * {\lambda\,\cdot\,\mathrm{efficiency}}@f$
- *
- * To get the total number, use @ref GetCount.
- *
- * @param fr	The TFitResultPtr returned by @ref Fit.
- * @param trans_time	The elapsed time before counting began.
- * @param efficiency	The efficiency of counting this sample.
- *
- * @return The uncertainty in the total number of C11.
- */
-Double_t GetError( TFitResultPtr fr, Double_t trans_time, Double_t efficiency );
+Error<Double_t> Counts( TFitResultPtr fr, Double_t trans_time, Double_t efficiency );
 
 } // namespace decay
+} // namespace n2n
+
+#endif
