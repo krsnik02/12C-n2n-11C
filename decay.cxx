@@ -1,4 +1,5 @@
-/** @file decay.cxx
+/** 
+ * @file n2n/decay.cxx
  * Copyright (C) 2013 Houghton College
  *
  * Contains functions for determining C11 activation counts.

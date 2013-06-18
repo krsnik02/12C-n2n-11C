@@ -1,5 +1,5 @@
 /** 
- * @file proton.hxx
+ * @file n2n/proton.hxx
  * Copyright (C) 2013 Houghton College 
  */
 

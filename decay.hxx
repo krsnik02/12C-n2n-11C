@@ -1,22 +1,14 @@
-/** @file decay.hxx
+/** 
+ * @file n2n/decay.hxx
  * Copyright (C) 2013 Houghton College
  */
 
 #ifndef N2N_DECAY_INCL_
 #define N2N_DECAY_INCL_
 
+#include "Error.hxx"
+
 namespace n2n {
-
-/**
- * A value and its uncertainty.
- */
-template <typename T>
-struct Error
-{
-	T value;	///< The value
-	T error;	///< The uncertainty in the value
-};
-
 namespace decay {
 
 /**
