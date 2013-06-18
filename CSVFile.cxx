@@ -1,8 +1,9 @@
-/** @file csv_file.cxx
+/** 
+ * @file n2n/CSVFile.cxx
  * Copyright (C) 2013 Houghton College
  */
 
-#include "csv_file.hxx"
+#include "CSVFile.hxx"
 
 namespace n2n {
 

@@ -11,7 +11,7 @@
 /// @cond
 {
 gROOT->ProcessLine(".L n2n/run_summary.cxx");
-gROOT->ProcessLine(".L n2n/csv_file.cxx");
+gROOT->ProcessLine(".L n2n/CSVFile.cxx");
 gROOT->ProcessLine(".L n2n/proton.cxx");
 gROOT->ProcessLine(".L n2n/decay.cxx");
 

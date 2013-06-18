@@ -1,4 +1,5 @@
-/** @file csv_file.hxx
+/** 
+ * @file n2n/CSVFile.hxx
  * Copyright (C) 2013 Houghton College
  */
 

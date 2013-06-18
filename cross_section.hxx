@@ -2,7 +2,7 @@
  * Copyright (C) 2013 Houghton College
  */
 
-#include "csv_file.hxx"
+#include "CSVFile.hxx"
 #include "run_summary.hxx"
 
 namespace cs {

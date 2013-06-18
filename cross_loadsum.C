@@ -12,7 +12,7 @@
 {
 gROOT->ProcessLine(".L n2n/cross_section.cxx");
 gROOT->ProcessLine(".L n2n/run_summary.cxx");
-gROOT->ProcessLine(".L n2n/csv_file.cxx");
+gROOT->ProcessLine(".L n2n/CSVFile.cxx");
 
 cs::CrossSection * cross = new cs::CrossSection();
 rs::RunSummary * sum = new rs::RunSummary();
