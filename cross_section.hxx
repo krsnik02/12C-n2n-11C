@@ -3,7 +3,7 @@
  */
 
 #include "CSVFile.hxx"
-#include "run_summary.hxx"
+#include "RunSummary.hxx"
 
 namespace cs {
 

@@ -1,8 +1,9 @@
-/** @file run_summary.cxx
+/** 
+ * @file n2n/RunSummary.cxx
  * Copyright (C) 2013 Houghton College
  */
 
-#include "run_summary.hxx"
+#include "RunSummary.hxx"
 #include "proton.hxx"
 #include "decay.hxx"
 

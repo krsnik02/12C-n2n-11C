@@ -1,4 +1,5 @@
-/** @file run_summary.hxx
+/** 
+ * @file n2n/RunSummary.hxx
  * Copyright (C) 2013 Houghton College
  */
 
@@ -9,7 +10,7 @@ namespace rs {
 /**
  * Run summary column names
  */
-enum RunSummary { 
+enum RSFields { 
         RS_RUN_NUMBER, 		///< Run number
 	RS_DATE, 		///< Date of run
 	RS_START_TIME, 		///< Start time
