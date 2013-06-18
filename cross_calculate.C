@@ -13,7 +13,7 @@
 gROOT->ProcessLine(".L n2n/CrossSection.cxx");
 gROOT->ProcessLine(".L n2n/CSVFile.cxx");
 
-cs::CrossSection * cross = new cs::CrossSection();
+n2n::CrossSection * cross = new n2n::CrossSection();
 cross->Load( "C:\\2012_12C(n,2n) Data\\ROOT Data\\Cross_Sections.csv" );
 cross->Calculate();
 cross->Save( "C:\\2012_12C(n,2n) Data\\ROOT Data\\Cross_Sections.csv" );

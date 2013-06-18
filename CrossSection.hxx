@@ -3,10 +3,13 @@
  * Copyright (C) 2013 Houghton College
  */
 
+#ifndef N2N_CROSSSECTION_INCL_
+#define N2N_CROSSSECTION_INCL_
+
 #include "CSVFile.hxx"
 #include "RunSummary.hxx"
 
-namespace cs {
+namespace n2n {
 
 /**
  * Cross Section column names
@@ -47,14 +50,14 @@ enum CSFields {
 };
 
 
-struct CrossSection : public n2n::CSVFile
+struct CrossSection : public CSVFile
 {
 	public:
 		/**
 		 * Copy values from Run_Summary.csv file into the Cross_Sections.csv file
 		 * @param summary The run summary to use
 		 */
-		void LoadSummary( n2n::RunSummary const * const summary );
+		void LoadSummary( RunSummary const * const summary );
 
 		/**
 		 * Calculate cross sections based on the values in Cross_Sections.csv
@@ -62,4 +65,6 @@ struct CrossSection : public n2n::CSVFile
 		void Calculate();
 };
 
-} // namespace cs
+} // namespace n2n
+
+#endif

@@ -6,9 +6,9 @@
 #include "CrossSection.hxx"
 #include "Error.hxx"
 
-namespace cs {
+namespace n2n {
 
-void UpdateSummary( vector<string> & row, n2n::RunSummary const * const summary )
+void UpdateSummary( vector<string> & row, RunSummary const * const summary )
 {
 	int fg_run_number = atoi( row[CS_FG_RUN_NUMBER].c_str() );
 	int bg_run_number = atoi( row[CS_BG_RUN_NUMBER].c_str() );
@@ -16,14 +16,14 @@ void UpdateSummary( vector<string> & row, n2n::RunSummary const * const summary 
 	vector<string> bg = summary->GetRun( bg_run_number );
 
 	assert( row.size() == CS_NUM_COLUMNS );
-	assert( fg.size() == n2n::RS_NUM_COLUMNS );
-	assert( bg.size() == n2n::RS_NUM_COLUMNS );
+	assert( fg.size() == RS_NUM_COLUMNS );
+	assert( bg.size() == RS_NUM_COLUMNS );
 
 	// Run data
-	row[CS_NEUTRON_ENERGY] 	= fg[n2n::RS_NEUTRON_ENERGY];
-	row[CS_CLOCK_TIME]	= fg[n2n::RS_CLOCK_TIME];
-	row[CS_FG_LIVE_TIME] 	= fg[n2n::RS_LIVE_TIME];
-	row[CS_BG_LIVE_TIME] 	= bg[n2n::RS_LIVE_TIME];
+	row[CS_NEUTRON_ENERGY] 	= fg[RS_NEUTRON_ENERGY];
+	row[CS_CLOCK_TIME]	= fg[RS_CLOCK_TIME];
+	row[CS_FG_LIVE_TIME] 	= fg[RS_LIVE_TIME];
+	row[CS_BG_LIVE_TIME] 	= bg[RS_LIVE_TIME];
 
 	// Geometry
 	row[CS_DET_AREA]	= "0.7133";	// cm^2
@@ -36,20 +36,20 @@ void UpdateSummary( vector<string> & row, n2n::RunSummary const * const summary 
 	row[CS_C12_THICKNESS]	= "0.889";	// cm
 
 	// Calculated values
-	row[CS_FG_PROTONS] 	= fg[n2n::RS_GROSS_PROTONS];
-	row[CS_BG_PROTONS] 	= bg[n2n::RS_GROSS_PROTONS];
-	row[CS_C11_C12]		= fg[n2n::RS_C11_PUCK];
-	row[CS_C11_C12_ERR]	= fg[n2n::RS_C11_PUCK_ERR];
-	row[CS_C11_CH2]		= fg[n2n::RS_C11_PLASTIC];
-	row[CS_C11_CH2_ERR]	= fg[n2n::RS_C11_PLASTIC_ERR];
+	row[CS_FG_PROTONS] 	= fg[RS_GROSS_PROTONS];
+	row[CS_BG_PROTONS] 	= bg[RS_GROSS_PROTONS];
+	row[CS_C11_C12]		= fg[RS_C11_PUCK];
+	row[CS_C11_C12_ERR]	= fg[RS_C11_PUCK_ERR];
+	row[CS_C11_CH2]		= fg[RS_C11_PLASTIC];
+	row[CS_C11_CH2_ERR]	= fg[RS_C11_PLASTIC_ERR];
 }
 
-void CrossSection::LoadSummary( n2n::RunSummary const * const summary )
+void CrossSection::LoadSummary( RunSummary const * const summary )
 {
 	for ( int i = 3; i < NumRows(); ++i )
 	{
 		vector<string> row = GetRow( i );
-		cs::UpdateSummary( row, summary );
+		n2n::UpdateSummary( row, summary );
 		SetRow( i, row );
 	}
 }
@@ -256,7 +256,7 @@ void CrossSection::Calculate()
 		double bg_live = atof( row[CS_BG_LIVE_TIME].c_str() );
 		double energy  = atof( row[CS_NEUTRON_ENERGY].c_str() );
 
-		double sigma_np = cs::CalcNPCrossSection( energy );
+		double sigma_np = n2n::CalcNPCrossSection( energy );
 
 		// Geometry
 		double area_det  = atof( row[CS_DET_AREA].c_str() );
@@ -268,12 +268,12 @@ void CrossSection::Calculate()
 		double dist_c12  = atof( row[CS_C12_DISTANCE].c_str() );
 		double thick_c12 = atof( row[CS_C12_THICKNESS].c_str() );
 
-		double sang_det = cs::CalcSolidAngle( area_det, dist_det );
-		double sang_ch2 = cs::CalcSolidAngle( area_ch2, dist_ch2 );
-		double nH_ch2   = cs::CalcThickness_H_CH2( thick_ch2 );
-		double nC_ch2   = cs::CalcThickness_C_CH2( thick_ch2 );
-		double sang_c12 = cs::CalcSolidAngle( area_c12, dist_c12 );
-		double nC_c12   = cs::CalcThickness_C_C12( thick_c12 );
+		double sang_det = n2n::CalcSolidAngle( area_det, dist_det );
+		double sang_ch2 = n2n::CalcSolidAngle( area_ch2, dist_ch2 );
+		double nH_ch2   = n2n::CalcThickness_H_CH2( thick_ch2 );
+		double nC_ch2   = n2n::CalcThickness_C_CH2( thick_ch2 );
+		double sang_c12 = n2n::CalcSolidAngle( area_c12, dist_c12 );
+		double nC_c12   = n2n::CalcThickness_C_C12( thick_c12 );
 
 		// Calculated data
 		int fg_protons = atoi( row[CS_FG_PROTONS].c_str() );
@@ -287,20 +287,20 @@ void CrossSection::Calculate()
 
 		// Calculate the flux
 		n2n::Error<double> protons = 
-			cs::CalcProtonFlux( fg_protons, bg_protons, fg_live, bg_live );
+			n2n::CalcProtonFlux( fg_protons, bg_protons, fg_live, bg_live );
 		row[CS_PROTON_FLUX]     = TString::Format( "%f", protons.value );
 		row[CS_PROTON_FLUX_ERR] = TString::Format( "%f", protons.error );
 
 		n2n::Error<double> neutrons = 
-			cs::CalcNeutronFlux( protons, sigma_np, nH_ch2, sang_det, sang_ch2 );
+			n2n::CalcNeutronFlux( protons, sigma_np, nH_ch2, sang_det, sang_ch2 );
 		row[CS_NEUTRON_FLUX]     = TString::Format( "%f", neutrons.value );
 		row[CS_NEUTRON_FLUX_ERR] = TString::Format( "%f", neutrons.error );
 
 		// Caclulate cross sections
 		n2n::Error<double> sigma_n2n_ch2 =
-			cs::CalcN2NCrossSection( c11_ch2, neutrons, 5.83, clock, nC_ch2, sang_ch2 );
+			n2n::CalcN2NCrossSection( c11_ch2, neutrons, 5.83, clock, nC_ch2, sang_ch2 );
 		n2n::Error<double> sigma_n2n_c12 =
-			cs::CalcN2NCrossSection( c11_c12, neutrons, 1, clock, nC_c12, sang_c12 );
+			n2n::CalcN2NCrossSection( c11_c12, neutrons, 1, clock, nC_c12, sang_c12 );
 		row[CS_XSECT_N2N_CH2]     = TString::Format( "%f", sigma_n2n_ch2.value );
 		row[CS_XSECT_N2N_CH2_ERR] = TString::Format( "%f", sigma_n2n_ch2.error );
 		row[CS_XSECT_N2N_C12]     = TString::Format( "%f", sigma_n2n_c12.value );
@@ -310,4 +310,4 @@ void CrossSection::Calculate()
 	}
 }
 
-} // namespace cs
+} // namespace n2n
