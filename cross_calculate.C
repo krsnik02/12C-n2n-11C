@@ -1,4 +1,5 @@
-/** @file cross_calculate.C
+/** 
+ * @file n2n/cross_calculate.C
  * Copyright (C) 2013 Houghton College
  *
  * Calculate cross sections from values in the Cross_Sections.csv file.
@@ -12,6 +13,7 @@
 {
 gROOT->ProcessLine(".L n2n/CrossSection.cxx");
 gROOT->ProcessLine(".L n2n/CSVFile.cxx");
+gROOT->ProcessLine(".L n2n/Target.cxx");
 
 n2n::CrossSection * cross = new n2n::CrossSection();
 cross->Load( "C:\\2012_12C(n,2n) Data\\ROOT Data\\Cross_Sections.csv" );
