@@ -6,7 +6,7 @@
 #ifndef N2N_TARGET_INCL_
 #define N2N_TARGET_INCL_
 
-#include "Error.hxx"
+#include "Uncertain.hxx"
 
 namespace n2n {
 
@@ -15,10 +15,10 @@ namespace n2n {
  */
 struct Target
 {
-	double area;		///< Area of the target, @f$A@f$ (@f$\text{cm}^2@f$)
-	double distance;	///< Distance of target from the tritium, @f$d@f$ (@f$\text{cm}@f$)
-	double thickness;	///< Thickness of the target, @f$th@f$ (@f$\text{cm}@f$)
-	Error<double> c11;	///< Number of activated @f${}^{11}\text{C}@f$ in target, @f$N_{C11}@f$
+	UncertainD area;	 ///< Area of the target, @f$A@f$ (@f$\text{cm}^2@f$)
+	UncertainD distance;	 ///< Distance of target from the tritium, @f$d@f$ (@f$\text{cm}@f$)
+	UncertainD thickness; 	 ///< Thickness of the target, @f$th@f$ (@f$\text{cm}@f$)
+	UncertainD decay;	 ///< Number of activated @f${}^{11}\text{C}@f$ in target, @f$N_{C11}@f$
 
 	virtual ~Target() {}
 

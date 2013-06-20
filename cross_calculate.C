@@ -12,6 +12,7 @@
 /// @cond
 {
 gROOT->ProcessLine(".L n2n/CrossSection_calculate.cxx");
+gROOT->ProcessLine(".L n2n/Uncertain.cxx");
 gROOT->ProcessLine(".L n2n/CSVFile.cxx");
 gROOT->ProcessLine(".L n2n/Target.cxx");
 

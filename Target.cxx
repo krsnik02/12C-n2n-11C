@@ -8,7 +8,7 @@ namespace n2n {
 
 double Target::SolidAngle() const
 {
-	return area / (distance * distance);
+	return area.val / (distance.val * distance.val);
 }
 
 double CH2Target::ThicknessC() const
@@ -20,7 +20,7 @@ double CH2Target::ThicknessC() const
 
 	// 1 u = 1.6605389e-24 g
 	// 1 barn = 1e-24 cm^2
-	return thickness * density / (mass * 1.6605389);
+	return thickness.val * density / (mass * 1.6605389);
 }
 
 double CH2Target::ThicknessH() const
@@ -32,7 +32,7 @@ double CH2Target::ThicknessH() const
 
 	// 1 u = 1.6605389e-24 g
 	// 1 barn = 1e-24 cm^2
-	return 2 * thickness * density / (mass * 1.6605389);
+	return 2 * thickness.val * density / (mass * 1.6605389);
 }
 
 double C12Target::ThicknessC() const
@@ -42,7 +42,7 @@ double C12Target::ThicknessC() const
 
 	// 1 u = 1.6605389e-24 g
 	// 1 barn = 1e-24 cm^2
-	return thickness * density / (mass * 1.6605389);
+	return thickness.val * density / (mass * 1.6605389);
 }
 
 double C12Target::ThicknessH() const
