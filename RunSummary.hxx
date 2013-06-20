@@ -45,18 +45,19 @@ enum RSFields {
 	RS_TOTAL_NEUTRONS,	///< Total neutrons (counts/BCI)
        	RS_GROSS_NEUTRONS,	///< Gross neutrons (counts/BCI)
         RS_NET_NEUTRONS,	///< Net neutrons (counts/BCI)
+	RS_EMPTY1,
 	RS_ROI_XMIN,		///< Min X value for region of interest
 	RS_ROI_XMAX,		///< Max X value for region of interest
 	RS_ROI_YMIN,		///< Min Y value for region of interest
 	RS_ROI_YMAX,		///< Max Y value for region of interest
-	RS_GROSS_PROTONS,	///< Gross protons detected (counts)
-       	RS_NET_PROTONS,		///< Net protons detected (counts)
-        RS_C11_PLASTIC,		///< Calculated C11 decays in CH2 (counts)
-       	RS_C11_PLASTIC_ERR,	///< Error in RS_C11_PLASTIC
-       	RS_C11_PUCK,		///< Calculated C11 decays in graphite (counts)
-        RS_C11_PUCK_ERR,	///< Error in RS_C11_PUCK
+	RS_PROTONS,		///< Gross protons detected (counts)
+        RS_CH2_DECAY,		///< Calculated C11 decays in CH2 (counts)
+       	RS_CH2_DECAY_ERR,	///< Error in RS_CH2_DECAY
+       	RS_C12_DECAY,		///< Calculated C11 decays in graphite (counts)
+        RS_C12_DECAY_ERR,	///< Error in RS_C12_DECAY
+	RS_EMPTY2,
        	RS_PROTONS_COUNT,	///< Protons detected (counts/&mu;C)
-	RS_PROTONS_ERROR,	///< Error in RS_PROTONS
+	RS_PROTONS_ERROR,	///< Error in RS_PROTONS_COUNT
 	RS_PROTONS_PER_NEUTRON,	///< Protons detected (counts/neutron)
         RS_DISTANCES,		///< Distance Section Header
        	RS_CH2_DISTANCE,	///< Distance to front of CH2 (cm)

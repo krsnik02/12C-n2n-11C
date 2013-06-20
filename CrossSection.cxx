@@ -39,12 +39,12 @@ void UpdateSummary( vector<string> & row, RunSummary const * const summary )
 	row[CS_C12_THICKNESS]	= "0.889";	// cm
 
 	// Calculated values
-	row[CS_FG_PROTONS] 	= fg[RS_GROSS_PROTONS];
-	row[CS_BG_PROTONS] 	= bg[RS_GROSS_PROTONS];
-	row[CS_C11_C12]		= fg[RS_C11_PUCK];
-	row[CS_C11_C12_ERR]	= fg[RS_C11_PUCK_ERR];
-	row[CS_C11_CH2]		= fg[RS_C11_PLASTIC];
-	row[CS_C11_CH2_ERR]	= fg[RS_C11_PLASTIC_ERR];
+	row[CS_FG_PROTONS] 	= fg[RS_PROTONS];
+	row[CS_BG_PROTONS] 	= bg[RS_PROTONS];
+	row[CS_C11_CH2]		= fg[RS_CH2_DECAY];
+	row[CS_C11_CH2_ERR]	= fg[RS_CH2_DECAY_ERR];
+	row[CS_C11_C12]		= fg[RS_C12_DECAY];
+	row[CS_C11_C12_ERR]	= fg[RS_C12_DECAY_ERR];
 }
 
 void CrossSection::LoadSummary( RunSummary const * const summary )

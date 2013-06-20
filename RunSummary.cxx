@@ -12,6 +12,7 @@ namespace n2n {
 vector<string> RunSummary::GetRun( int run_number ) const
 {
 	vector<string> row = GetRow( run_number + 2 );
+	cout << row[n2n::RS_RUN_NUMBER] << "\t" << run_number << endl;
 	assert( atoi( row[n2n::RS_RUN_NUMBER].c_str() ) == run_number );
 	return row;
 }
@@ -49,8 +50,8 @@ void UpdateC11( vector<string> & run, char const * dirname )
 		Error<Double_t> n_c11 = decay::Counts( fr, trans_time, efficiency );
 		delete ge;
 
-		run[n2n::RS_C11_PUCK] = TString::Format( "%f", n_c11.value );
-		run[n2n::RS_C11_PUCK_ERR] = TString::Format( "%f", n_c11.error );
+		run[n2n::RS_C12_DECAY] = TString::Format( "%f", n_c11.value );
+		run[n2n::RS_C12_DECAY_ERR] = TString::Format( "%f", n_c11.error );
 	}
 
 	if ( !gSystem->AccessPathName( filename_plastic ) )
@@ -60,8 +61,8 @@ void UpdateC11( vector<string> & run, char const * dirname )
 		Error<Double_t> n_c11 = decay::Counts( fr, trans_time, efficiency );
 		delete ge;
 
-		run[n2n::RS_C11_PLASTIC] = TString::Format( "%f", n_c11.value );
-		run[n2n::RS_C11_PLASTIC_ERR] = TString::Format( "%f", n_c11.error );
+		run[n2n::RS_CH2_DECAY] = TString::Format( "%f", n_c11.value );
+		run[n2n::RS_CH2_DECAY_ERR] = TString::Format( "%f", n_c11.error );
 	}
 }
 
@@ -89,7 +90,7 @@ void UpdateProtons( vector<string> & run, char const * dirname )
 		run[n2n::RS_ROI_XMAX] = TString::Format( "%d", roi.max_x );
 		run[n2n::RS_ROI_YMIN] = TString::Format( "%d", roi.min_y );
 		run[n2n::RS_ROI_YMAX] = TString::Format( "%d", roi.max_y );
-		run[n2n::RS_GROSS_PROTONS] = TString::Format( "%d", protons );
+		run[n2n::RS_PROTONS]  = TString::Format( "%d", protons );
 	}
 }
 
