@@ -47,22 +47,18 @@ void UpdateC11( vector<string> & run, char const * dirname )
 	{
 		TGraphErrors * ge = decay::ParseDataFile( filename_puck );
 		TFitResultPtr fr = decay::FitDecayCurve( ge );
-		Error<Double_t> n_c11 = decay::Counts( fr, trans_time, efficiency );
+		UncertainD n_c11 = decay::Counts( fr, trans_time, efficiency );
+		n2n::WriteUncertainD( n_c11, run, RS_C12_DECAY, RS_C12_DECAY_ERR );
 		delete ge;
-
-		run[n2n::RS_C12_DECAY] = TString::Format( "%f", n_c11.value );
-		run[n2n::RS_C12_DECAY_ERR] = TString::Format( "%f", n_c11.error );
 	}
 
 	if ( !gSystem->AccessPathName( filename_plastic ) )
 	{
 		TGraphErrors * ge = decay::ParseDataFile( filename_plastic );
 		TFitResultPtr fr = decay::FitDecayCurve( ge );
-		Error<Double_t> n_c11 = decay::Counts( fr, trans_time, efficiency );
+		UncertainD n_c11 = decay::Counts( fr, trans_time, efficiency );
+		n2n::WriteUncertainD( n_c11, run, RS_CH2_DECAY, RS_CH2_DECAY_ERR );
 		delete ge;
-
-		run[n2n::RS_CH2_DECAY] = TString::Format( "%f", n_c11.value );
-		run[n2n::RS_CH2_DECAY_ERR] = TString::Format( "%f", n_c11.error );
 	}
 }
 

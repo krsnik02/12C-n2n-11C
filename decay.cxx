@@ -53,16 +53,16 @@ TFitResultPtr FitDecayCurve( TGraphErrors * ge )
 	return ge->Fit( decay, "s", "", xmin, xmax );
 }
 
-Error<Double_t> Counts( TFitResultPtr fr, Double_t trans_time, Double_t efficiency )
+UncertainD Counts( TFitResultPtr fr, double trans_time, double efficiency )
 {
-	Error<Double_t> n0;
-	n0.value = fr->Parameter( 0 );
-	n0.error = fr->ParError( 0 );
+	UncertainD n0;
+	n0.val = fr->Parameter( 0 );
+	n0.unc = fr->ParError( 0 );
 	Double_t lambda = fr->Parameter( 1 );
 
-	Error<Double_t> n_c11;
-	n_c11.value = n0.value * TMath::Exp( lambda * trans_time ) / (lambda * efficiency);
-	n_c11.error = n0.error * TMath::Exp( lambda * trans_time ) / (lambda * efficiency);
+	UncertainD n_c11;
+	n_c11.val = n0.val * TMath::Exp( lambda * trans_time ) / (lambda * efficiency);
+	n_c11.unc = n0.unc * TMath::Exp( lambda * trans_time ) / (lambda * efficiency);
 	return n_c11;
 }
 

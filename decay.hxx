@@ -6,7 +6,7 @@
 #ifndef N2N_DECAY_INCL_
 #define N2N_DECAY_INCL_
 
-#include "Error.hxx"
+#include "Uncertain.hxx"
 
 namespace n2n {
 namespace decay {
@@ -46,7 +46,7 @@ TFitResultPtr FitDecayCurve( TGraphErrors * ge );
  *
  * @return The total number of C11 originally present in the sample.
  */
-Error<Double_t> Counts( TFitResultPtr fr, Double_t trans_time, Double_t efficiency );
+UncertainD Counts( TFitResultPtr fr, double trans_time, double efficiency );
 
 } // namespace decay
 } // namespace n2n
