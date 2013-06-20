@@ -92,6 +92,12 @@ void UpdateProtons( vector<string> & run, char const * dirname )
 		run[n2n::RS_ROI_YMAX] = TString::Format( "%d", roi.max_y );
 		run[n2n::RS_PROTONS]  = TString::Format( "%d", protons );
 	}
+
+	// Calculate proton telescope live time
+	float e_dead = atof( run[n2n::RS_E_DEAD].c_str() );
+	float de_dead = atof( run[n2n::RS_DE_DEAD].c_str() );
+	float live = 1 - sqrt( e_dead * e_dead + de_dead * de_dead );
+	run[n2n::RS_TOTAL_LIVE] = TString::Format( "%f", live );
 }
 
 

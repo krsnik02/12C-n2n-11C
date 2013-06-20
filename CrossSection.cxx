@@ -24,9 +24,10 @@ void UpdateSummary( vector<string> & row, RunSummary const * const summary )
 
 	// Run data
 	row[CS_NEUTRON_ENERGY] 	= fg[RS_NEUTRON_ENERGY];
-	row[CS_CLOCK_TIME]	= fg[RS_CLOCK_TIME];
-	row[CS_FG_LIVE_TIME] 	= fg[RS_LIVE_TIME];
-	row[CS_BG_LIVE_TIME] 	= bg[RS_LIVE_TIME];
+	row[CS_FG_CLOCK_TIME]	= fg[RS_CLOCK_TIME];
+	row[CS_FG_LIVE_PERCENT] = fg[RS_TOTAL_LIVE];
+	row[CS_BG_CLOCK_TIME]	= bg[RS_CLOCK_TIME];
+	row[CS_BG_LIVE_PERCENT] = bg[RS_TOTAL_LIVE];
 
 	// Geometry
 	row[CS_DET_AREA]	= "0.7133";	// cm^2
@@ -201,10 +202,14 @@ void CrossSection::Calculate()
 		// Calculate the proton flux
 		int fg_protons = atoi( row[CS_FG_PROTONS].c_str() );
 		int bg_protons = atoi( row[CS_BG_PROTONS].c_str() );
-		double fg_live = atof( row[CS_FG_LIVE_TIME].c_str() );
-		double bg_live = atof( row[CS_BG_LIVE_TIME].c_str() );
 
-		Error<double> protons = n2n::CalcProtonFlux( fg_protons, bg_protons, fg_live, bg_live );
+		double fg_clock = atof( row[CS_FG_CLOCK_TIME].c_str() );
+		double fg_live = atof( row[CS_FG_LIVE_PERCENT].c_str() );
+		double bg_clock = atof( row[CS_BG_CLOCK_TIME].c_str() );
+		double bg_live = atof( row[CS_BG_LIVE_PERCENT].c_str() );
+
+		Error<double> protons = n2n::CalcProtonFlux( fg_protons, bg_protons, 
+						fg_clock * fg_live, bg_clock * bg_live );
 		row[CS_PROTON_FLUX]     = TString::Format( "%f", protons.value );
 		row[CS_PROTON_FLUX_ERR] = TString::Format( "%f", protons.error );
 
@@ -220,14 +225,12 @@ void CrossSection::Calculate()
 		row[CS_NEUTRON_FLUX]     = TString::Format( "%f", neutrons.value );
 		row[CS_NEUTRON_FLUX_ERR] = TString::Format( "%f", neutrons.error );
 
-		// Caclulate cross sections
-		double clock = atof( row[CS_CLOCK_TIME].c_str() );
-
-		Error<double> sigma_n2n_ch2 = n2n::CalcN2NCrossSection( ch2, neutrons, 5.83, clock );
+		// Calculate cross sections
+		Error<double> sigma_n2n_ch2 = n2n::CalcN2NCrossSection( ch2, neutrons, 5.83, fg_clock );
 		row[CS_XSECT_N2N_CH2]     = TString::Format( "%f", sigma_n2n_ch2.value );
 		row[CS_XSECT_N2N_CH2_ERR] = TString::Format( "%f", sigma_n2n_ch2.error );
 
-		Error<double> sigma_n2n_c12 = n2n::CalcN2NCrossSection( c12, neutrons, 1, clock );
+		Error<double> sigma_n2n_c12 = n2n::CalcN2NCrossSection( c12, neutrons, 1, fg_clock );
 		row[CS_XSECT_N2N_C12]     = TString::Format( "%f", sigma_n2n_c12.value );
 		row[CS_XSECT_N2N_C12_ERR] = TString::Format( "%f", sigma_n2n_c12.error );
 

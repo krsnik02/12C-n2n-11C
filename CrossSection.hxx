@@ -18,9 +18,10 @@ enum CSFields {
 	CS_FG_RUN_NUMBER,	///< Run number of foreground run
 	CS_BG_RUN_NUMBER,	///< Run number of background run
 	CS_NEUTRON_ENERGY,	///< Neutron energy (MeV)
-	CS_CLOCK_TIME,		///< Total clock time (s)
-	CS_FG_LIVE_TIME,	///< Live time of foreground run (s)
-	CS_BG_LIVE_TIME,	///< Live time of background run (s)
+	CS_FG_CLOCK_TIME,	///< Total clock time of foreground (s)
+	CS_FG_LIVE_PERCENT,	///< Live time of foreground run (%)
+	CS_BG_CLOCK_TIME,	///< Total clock time of background (s)
+	CS_BG_LIVE_PERCENT,	///< Live time of background run (%)
 	CS_EMPTY1,
 	CS_DET_AREA,		///< Area of detector (cm^2)
 	CS_DET_DISTANCE,	///< Distance of detector (cm)
