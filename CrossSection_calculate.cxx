@@ -7,6 +7,7 @@
 #include "Target.hxx"
 
 namespace n2n {
+namespace calculate {
 
 /**
  * Calculate the proton flux, @f$N_p@f$.
@@ -125,6 +126,8 @@ Error<double> CalcN2NCrossSection( Target * target, Error<double> neutrons, doub
 	return xsect;
 }
 
+} // namespace calculate
+
 void CrossSection::Calculate()
 {
 	for ( int i = 3; i < NumRows(); ++i )
@@ -136,51 +139,51 @@ void CrossSection::Calculate()
 		ch2->area      = atof( row[CS_CH2_AREA].c_str() );
 		ch2->distance  = atof( row[CS_CH2_DISTANCE].c_str() );
 		ch2->thickness = atof( row[CS_CH2_THICKNESS].c_str() );
-		ch2->c11.value = atof( row[CS_C11_CH2].c_str() );
-		ch2->c11.error = atof( row[CS_C11_CH2_ERR].c_str() );
+		ch2->c11.value = atof( row[CS_CH2_DECAY].c_str() );
+		ch2->c11.error = atof( row[CS_CH2_DECAY_UNC].c_str() );
 
 		// C12 target
 		Target * c12 = new C12Target();
 		c12->area      = atof( row[CS_C12_AREA].c_str() );
 		c12->distance  = atof( row[CS_C12_DISTANCE].c_str() );
 		c12->thickness = atof( row[CS_C12_THICKNESS].c_str() );
-		c12->c11.value = atof( row[CS_C11_C12].c_str() );
-		c12->c11.error = atof( row[CS_C11_C12_ERR].c_str() );
+		c12->c11.value = atof( row[CS_C12_DECAY].c_str() );
+		c12->c11.error = atof( row[CS_C12_DECAY_UNC].c_str() );
 
 		// Calculate the proton flux
 		int fg_protons = atoi( row[CS_FG_PROTONS].c_str() );
 		int bg_protons = atoi( row[CS_BG_PROTONS].c_str() );
 
 		double fg_clock = atof( row[CS_FG_CLOCK_TIME].c_str() );
-		double fg_live = atof( row[CS_FG_LIVE_PERCENT].c_str() );
+		double fg_live = atof( row[CS_FG_LIVE_FRAC].c_str() );
 		double bg_clock = atof( row[CS_BG_CLOCK_TIME].c_str() );
-		double bg_live = atof( row[CS_BG_LIVE_PERCENT].c_str() );
+		double bg_live = atof( row[CS_BG_LIVE_FRAC].c_str() );
 
-		Error<double> protons = n2n::CalcProtonFlux( fg_protons, bg_protons, 
+		Error<double> protons = calculate::CalcProtonFlux( fg_protons, bg_protons, 
 						fg_clock * fg_live, bg_clock * bg_live );
 		row[CS_PROTON_FLUX]     = TString::Format( "%f", protons.value );
-		row[CS_PROTON_FLUX_ERR] = TString::Format( "%f", protons.error );
+		row[CS_PROTON_FLUX_UNC] = TString::Format( "%f", protons.error );
 
 		// Calculate the neutron flux
 		double area_det  = atof( row[CS_DET_AREA].c_str() );
 		double dist_det  = atof( row[CS_DET_DISTANCE].c_str() );
-		double sang_det = n2n::CalcSolidAngle( area_det, dist_det );
+		double sang_det = calculate::CalcSolidAngle( area_det, dist_det );
 
 		double energy  = atof( row[CS_NEUTRON_ENERGY].c_str() );
-		double sigma_np = n2n::CalcNPCrossSection( energy );
+		double sigma_np = calculate::CalcNPCrossSection( energy );
 
-		Error<double> neutrons = n2n::CalcNeutronFlux( protons, sigma_np, ch2, sang_det );
+		Error<double> neutrons = calculate::CalcNeutronFlux( protons, sigma_np, ch2, sang_det );
 		row[CS_NEUTRON_FLUX]     = TString::Format( "%f", neutrons.value );
-		row[CS_NEUTRON_FLUX_ERR] = TString::Format( "%f", neutrons.error );
+		row[CS_NEUTRON_FLUX_UNC] = TString::Format( "%f", neutrons.error );
 
 		// Calculate cross sections
-		Error<double> sigma_n2n_ch2 = n2n::CalcN2NCrossSection( ch2, neutrons, 5.83, fg_clock );
-		row[CS_XSECT_N2N_CH2]     = TString::Format( "%f", sigma_n2n_ch2.value );
-		row[CS_XSECT_N2N_CH2_ERR] = TString::Format( "%f", sigma_n2n_ch2.error );
+		Error<double> sigma_n2n_ch2 = calculate::CalcN2NCrossSection( ch2, neutrons, 5.83, fg_clock );
+		row[CS_CH2_XSECT]     = TString::Format( "%f", sigma_n2n_ch2.value );
+		row[CS_CH2_XSECT_UNC] = TString::Format( "%f", sigma_n2n_ch2.error );
 
-		Error<double> sigma_n2n_c12 = n2n::CalcN2NCrossSection( c12, neutrons, 1, fg_clock );
-		row[CS_XSECT_N2N_C12]     = TString::Format( "%f", sigma_n2n_c12.value );
-		row[CS_XSECT_N2N_C12_ERR] = TString::Format( "%f", sigma_n2n_c12.error );
+		Error<double> sigma_n2n_c12 = calculate::CalcN2NCrossSection( c12, neutrons, 1, fg_clock );
+		row[CS_C12_XSECT]     = TString::Format( "%f", sigma_n2n_c12.value );
+		row[CS_C12_XSECT_UNC] = TString::Format( "%f", sigma_n2n_c12.error );
 
 		SetRow( i, row );
 	}
