@@ -24,40 +24,45 @@ void UpdateSummary( vector<string> & row, RunSummary const * const summary )
 
 	// Run data
 	row[CS_NEUTRON_ENERGY] 	= fg[RS_NEUTRON_ENERGY];
+	row[CS_NEUTRON_ENERGY_UNC] = "0";
 	row[CS_FG_CLOCK_TIME]	= fg[RS_CLOCK_TIME];
-	row[CS_FG_LIVE_PERCENT] = fg[RS_TOTAL_LIVE];
+	row[CS_FG_CLOCK_TIME_UNC] = "0";
+	row[CS_FG_LIVE_FRAC] = fg[RS_TOTAL_LIVE];
+	row[CS_FG_LIVE_FRAC_UNC] = "0";
 	row[CS_BG_CLOCK_TIME]	= bg[RS_CLOCK_TIME];
-	row[CS_BG_LIVE_PERCENT] = bg[RS_TOTAL_LIVE];
+	row[CS_BG_CLOCK_TIME_UNC] = "0";
+	row[CS_BG_LIVE_FRAC] = bg[RS_TOTAL_LIVE];
+	row[CS_BG_LIVE_FRAC_UNC] = "0";
 
 	// Geometry
 	row[CS_DET_AREA]	= "0.7133";	// cm^2
-	row[CS_DET_AREA_ERR]	= "0";
+	row[CS_DET_AREA_UNC]	= "0";
 	row[CS_DET_DISTANCE]	= "12.07";	// cm
-	row[CS_DET_DISTANCE_ERR] = "0";
+	row[CS_DET_DISTANCE_UNC] = "0";
 
 	row[CS_CH2_AREA]	= "5.067075";	// cm^2
-	row[CS_CH2_AREA_ERR]	= "0";
+	row[CS_CH2_AREA_UNC]	= "0";
 	row[CS_CH2_DISTANCE]	= "6.46";	// cm
-	row[CS_CH2_DISTANCE_ERR] = "0";
+	row[CS_CH2_DISTANCE_UNC] = "0";
 	row[CS_CH2_THICKNESS]	= "0.164";	// cm
-	row[CS_CH2_THICKNESS_ERR] = "0";
+	row[CS_CH2_THICKNESS_UNC] = "0";
 
 	row[CS_C12_AREA]	= "43.20869";	// cm^2
-	row[CS_C12_AREA_ERR]	= "0";
+	row[CS_C12_AREA_UNC]	= "0";
 	row[CS_C12_DISTANCE]	= "14.52";	// cm
-	row[CS_C12_DISTANCE_ERR] = "0";
+	row[CS_C12_DISTANCE_UNC] = "0";
 	row[CS_C12_THICKNESS]	= "0.889";	// cm
-	row[CS_C12_THICKNESS_ERR] = "0";
+	row[CS_C12_THICKNESS_UNC] = "0";
 
 	// Calculated values
 	row[CS_FG_PROTONS] 	= fg[RS_PROTONS];
-	row[CS_FG_PROTONS_ERR]	= TString::Format( "%f", sqrt( atof( fg[RS_PROTONS].c_str() ) ) );
+	row[CS_FG_PROTONS_UNC]	= TString::Format( "%f", sqrt( atof( fg[RS_PROTONS].c_str() ) ) );
 	row[CS_BG_PROTONS] 	= bg[RS_PROTONS];
-	row[CS_BG_PROTONS_ERR]	= TString::Format( "%f", sqrt( atof( bg[RS_PROTONS].c_str() ) ) );
-	row[CS_C11_CH2]		= fg[RS_CH2_DECAY];
-	row[CS_C11_CH2_ERR]	= fg[RS_CH2_DECAY_ERR];
-	row[CS_C11_C12]		= fg[RS_C12_DECAY];
-	row[CS_C11_C12_ERR]	= fg[RS_C12_DECAY_ERR];
+	row[CS_BG_PROTONS_UNC]	= TString::Format( "%f", sqrt( atof( bg[RS_PROTONS].c_str() ) ) );
+	row[CS_CH2_DECAY]	= fg[RS_CH2_DECAY];
+	row[CS_CH2_DECAY_UNC]	= fg[RS_CH2_DECAY_ERR];
+	row[CS_C12_DECAY]	= fg[RS_C12_DECAY];
+	row[CS_C12_DECAY_UNC]	= fg[RS_C12_DECAY_ERR];
 }
 
 void CrossSection::LoadSummary( RunSummary const * const summary )
