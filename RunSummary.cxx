@@ -39,7 +39,6 @@ void UpdateC11( vector<string> & run, char const * dirname )
 				TString::Format( "Run%03d_plastic.csv", run_number ) );
 
 	double trans_time = atoi( run[n2n::RS_INTERIM_TIME].c_str() ) / 60.0;	// min
-	double efficiency = 0.12;
 	
 	// NOTE: TSystem::AccessPathName returns *false* if the file exists!
 	// http://root.cern.ch/root/html/TSystem.html#TSystem:AccessPathName
@@ -47,8 +46,8 @@ void UpdateC11( vector<string> & run, char const * dirname )
 	{
 		TGraphErrors * ge = decay::ParseDataFile( filename_puck );
 		TFitResultPtr fr = decay::FitDecayCurve( ge );
-		UncertainD n_c11 = decay::Counts( fr, trans_time, efficiency );
-		n2n::WriteUncertainD( n_c11, run, RS_C12_DECAY, RS_C12_DECAY_ERR );
+		UncertainD n_c11 = decay::Counts( fr, trans_time, 0.12 );
+		n2n::WriteUncertainD( n_c11, &run, RS_C12_DECAY, RS_C12_DECAY_ERR );
 		delete ge;
 	}
 
@@ -56,8 +55,8 @@ void UpdateC11( vector<string> & run, char const * dirname )
 	{
 		TGraphErrors * ge = decay::ParseDataFile( filename_plastic );
 		TFitResultPtr fr = decay::FitDecayCurve( ge );
-		UncertainD n_c11 = decay::Counts( fr, trans_time, efficiency );
-		n2n::WriteUncertainD( n_c11, run, RS_CH2_DECAY, RS_CH2_DECAY_ERR );
+		UncertainD n_c11 = decay::Counts( fr, trans_time, 0.12 * 5.83 );
+		n2n::WriteUncertainD( n_c11, &run, RS_CH2_DECAY, RS_CH2_DECAY_ERR );
 		delete ge;
 	}
 }
