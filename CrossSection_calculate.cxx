@@ -80,10 +80,11 @@ double CalcSolidAngle( double area, double dist )
  * @return The neutron flux, @f$N_{flux}@f$ 
  * (@f$\frac{\text{neutrons}}{\text{s}\cdot\text{sr}}@f$)
  */
-UncertainD CalcNeutronFlux( UncertainD protons, double sigma_np, Target * ch2, double sang_det )
+UncertainD CalcNeutronFlux( UncertainD protons, double sigma_np, double ch2_nH, double ch2_sang, 
+			    double det_sang )
 {
 	// 1 mbarn = 1e-3 barn
-	double denom = sigma_np * ch2->ThicknessH() * sang_det * ch2->SolidAngle() * 1e-3;
+	double denom = sigma_np * ch2_nH * ch2_sang * det_sang * 1e-3;
 
 	UncertainD flux;
 	flux.val = protons.val / denom;
@@ -111,7 +112,7 @@ UncertainD CalcNeutronFlux( UncertainD protons, double sigma_np, Target * ch2, d
  * (@f$\frac{\text{C nuclei}}{\text{barn}}@f$)
  * @return The cross section, @f$\sigma_{n2n}@f$ (mb)
  */
-UncertainD CalcN2NCrossSection( Target * target, UncertainD neutrons, double efficiency, double time )
+UncertainD CalcN2NCrossSection( Target * target, UncertainD neutrons, double time )
 {	
 	// 1 min = 60 s
 	double decay = TMath::Log( 2 ) / (20.334 * 60);	// (1/s)
@@ -121,7 +122,7 @@ UncertainD CalcN2NCrossSection( Target * target, UncertainD neutrons, double eff
 		* (1 - TMath::Exp( -decay * time ));
 
 	UncertainD xsect;
-	xsect.val = target->decay.val * decay / (efficiency * denom);
+	xsect.val = target->decay.val * decay / denom;
 	xsect.unc = xsect.val * sqrt( pow( neutrons.unc / neutrons.val, 2 ) +
 			pow( target->decay.unc / target->decay.val, 2 ) );
 	return xsect;
@@ -170,12 +171,13 @@ void CrossSection::Calculate()
 		double energy  = atof( row[CS_NEUTRON_ENERGY].c_str() );
 		double sigma_np = calculate::CalcNPCrossSection( energy );
 
-		UncertainD neutrons = calculate::CalcNeutronFlux( protons, sigma_np, ch2, sang_det );
+		UncertainD neutrons = calculate::CalcNeutronFlux( 
+			protons, sigma_np, ch2->ThicknessH(), ch2->SolidAngle(), sang_det );
 		n2n::WriteUncertainD( neutrons, row, CS_NEUTRON_FLUX, CS_NEUTRON_FLUX_UNC );
 
 		// Calculate cross sections
-		UncertainD sigma_n2n_ch2 = calculate::CalcN2NCrossSection( ch2, neutrons, 5.83, fg_clock );
-		UncertainD sigma_n2n_c12 = calculate::CalcN2NCrossSection( c12, neutrons, 1, fg_clock );
+		UncertainD sigma_n2n_ch2 = calculate::CalcN2NCrossSection( ch2, neutrons, fg_clock );
+		UncertainD sigma_n2n_c12 = calculate::CalcN2NCrossSection( c12, neutrons, fg_clock );
 		n2n::WriteUncertainD( sigma_n2n_ch2, row, CS_CH2_XSECT, CS_CH2_XSECT_UNC );
 		n2n::WriteUncertainD( sigma_n2n_c12, row, CS_C12_XSECT, CS_C12_XSECT_UNC );
 
