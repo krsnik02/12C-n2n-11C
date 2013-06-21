@@ -172,15 +172,18 @@ void CrossSection::Calculate()
 		double energy  = atof( row[CS_NEUTRON_ENERGY].c_str() );
 		double sigma_np = calculate::CalcNPCrossSection( energy );
 
+		double ch2_sang = calculate::CalcSolidAngle( ch2->area.val, ch2->distance.val );
+		double c12_sang = calculate::CalcSolidAngle( c12->area.val, c12->distance.val );
+
 		UncertainD neutrons = calculate::CalcNeutronFlux( 
-			protons, sigma_np, ch2->ThicknessH(), ch2->SolidAngle(), sang_det );
+			protons, sigma_np, ch2->ThicknessH(), ch2_sang, sang_det );
 		n2n::WriteUncertainD( neutrons, row, CS_NEUTRON_FLUX, CS_NEUTRON_FLUX_UNC );
 
 		// Calculate cross sections
 		UncertainD sigma_n2n_ch2 = calculate::CalcN2NCrossSection( 
-			ch2->decay, neutrons, fg_clock, ch2->ThicknessC(), ch2->SolidAngle() );
+			ch2->decay, neutrons, fg_clock, ch2->ThicknessC(), ch2_sang );
 		UncertainD sigma_n2n_c12 = calculate::CalcN2NCrossSection( 
-			c12->decay, neutrons, fg_clock, c12->ThicknessC(), c12->SolidAngle() );
+			c12->decay, neutrons, fg_clock, c12->ThicknessC(), c12_sang );
 		n2n::WriteUncertainD( sigma_n2n_ch2, row, CS_CH2_XSECT, CS_CH2_XSECT_UNC );
 		n2n::WriteUncertainD( sigma_n2n_c12, row, CS_C12_XSECT, CS_C12_XSECT_UNC );
 
