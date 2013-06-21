@@ -4,7 +4,7 @@
  */
 
 #include "CrossSection.hxx"
-#include "Target.hxx"
+#include "Uncertain.hxx"
 
 namespace n2n {
 namespace calculate {
