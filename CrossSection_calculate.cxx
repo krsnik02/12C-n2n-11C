@@ -1,5 +1,5 @@
 /**
- * @file n2n/CrossSection.cxx
+ * @file n2n/CrossSection_calculate.cxx
  * Copyright (C) 2013 Houghton College
  */
 
@@ -12,23 +12,30 @@ namespace calculate {
 /**
  * Calculate the proton flux, @f$N_p@f$.
  *
- * @f[N_p=\frac{N_{p,fg}}{t_{live,fg}}-\frac{N_{p,bg}}{t_{live,bg}}@f]
- * @f[\delta_{N_p}=\sqrt{\left(\frac{\sqrt{N_{p,fg}}}{t_{live,fg}}\right)^2+
- * \left(\frac{\sqrt{N_{p,bg}}}{t_{live,bg}}\right)^2}@f]
+ * @f[N_p=
+ *	\frac{N_{p,fg}}{t_{clock,fg}t_{live,fg}}-
+ *      \frac{N_{p,bg}}{t_{clock,bg}t_{live,bg}}@f]
+ * @f[{\delta_{N_p}}^2=
+ * 	\left(\frac{\delta_{N_{p,fg}}}{t_{clock,fg}t_{live,fg}}\right)^2+
+ * 	\left(\frac{\delta_{N_{p,bg}}}{t_{clock,bg}t_{live,bg}}\right)^2@f]
  *
  * @param fg_protons Number of protons in foreground, @f$N_{p,fg}@f$ (protons)
+ * @param fg_clock Clock time of foreground, @f$t_{clock,fg}@f$ (s)
+ * @param fg_live Fraction of live time in foreground, @f$t_{live,fg}@f$
  * @param bg_protons Number of protons in background, @f$N_{p,bg}@f$ (protons)
- * @param fg_live Live time of foreground, @f$t_{live,fg}@f$ (s)
- * @param bg_live Live time of background, @f$t_{live,bg}@f$ (s)
+ * @param bg_clock Clock time of background, @f$t_{clock,bg}@f$ (s)
+ * @param bg_live Fraction of live time in background, @f$t_{live,bg}@f$
+ *
  * @return The proton flux, @f$N_p@f$ (@f$\frac{\text{protons}}{\text{s}}@f$)
  */
-UncertainD CalcProtonFlux( int fg_protons, double fg_clock, double fg_live, 
-			   int bg_protons, double bg_clock, double bg_live )
+UncertainD ProtonFlux( UncertainD fg_protons, double fg_clock, double fg_live, 
+		       UncertainD bg_protons, double bg_clock, double bg_live )
 {
 	UncertainD protons;
-	protons.val = (fg_protons / (fg_clock * fg_live)) - (bg_protons / (bg_clock * bg_live));
-	protons.unc = sqrt( pow( sqrt( fg_protons ) / (fg_clock * fg_live), 2 ) +
-			pow( sqrt( bg_protons ) / (bg_clock * bg_live), 2 ) );
+	protons.val = fg_protons.val / (fg_clock * fg_live) - 
+                      bg_protons.val / (bg_clock * bg_live);
+	protons.unc = sqrt( pow( fg_protons.unc / (fg_clock * fg_live), 2 ) +
+			    pow( bg_protons.unc / (bg_clock * bg_live), 2 ) );
 	return protons;
 }
 
@@ -184,15 +191,15 @@ void CrossSection::Calculate()
 		UncertainD c12_decay = n2n::ReadUncertainD( row, CS_C12_DECAY, CS_C12_DECAY_UNC );
 
 		// Calculate the proton flux
-		int fg_protons = atoi( row[CS_FG_PROTONS].c_str() );
-		int bg_protons = atoi( row[CS_BG_PROTONS].c_str() );
+		UncertainD fg_protons = n2n::ReadUncertainD( row, CS_FG_PROTONS, CS_FG_PROTONS_UNC );
+		UncertainD bg_protons = n2n::ReadUncertainD( row, CS_BG_PROTONS, CS_BG_PROTONS_UNC );
 
 		double fg_clock = atof( row[CS_FG_CLOCK_TIME].c_str() );
 		double fg_live = atof( row[CS_FG_LIVE_FRAC].c_str() );
 		double bg_clock = atof( row[CS_BG_CLOCK_TIME].c_str() );
 		double bg_live = atof( row[CS_BG_LIVE_FRAC].c_str() );
 
-		UncertainD protons = calculate::CalcProtonFlux( 
+		UncertainD protons = calculate::ProtonFlux( 
 			fg_protons, fg_clock, fg_live, bg_protons, bg_clock, bg_live );
 		n2n::WriteUncertainD( protons, &row, CS_PROTON_FLUX, CS_PROTON_FLUX_UNC );
 
