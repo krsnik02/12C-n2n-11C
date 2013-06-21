@@ -20,7 +20,7 @@ struct UncertainD
 };
 
 UncertainD ReadUncertainD( vector<string> const & row, int val_col, int unc_col );
-void WriteUncertainD( UncertainD const & value, vector<string> & row, int val_col, int unc_col );
+void WriteUncertainD( UncertainD const & value, vector<string> * row, int val_col, int unc_col );
 
 } // namespace n2n
 

@@ -15,10 +15,10 @@ UncertainD ReadUncertainD( vector<string> const & row, int val_col, int unc_col 
 	return ret;
 }
 
-void WriteUncertainD( UncertainD const & value, vector<string> & row, int val_col, int unc_col )
+void WriteUncertainD( UncertainD const & value, vector<string> * row, int val_col, int unc_col )
 {
-	row[val_col] = TString::Format( "%f", value.val );
-	row[unc_col] = TString::Format( "%f", value.unc );
+	(*row)[val_col] = TString::Format( "%f", value.val );
+	(*row)[unc_col] = TString::Format( "%f", value.unc );
 }
 
 } // namespace n2n
