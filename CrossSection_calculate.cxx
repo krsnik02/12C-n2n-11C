@@ -172,11 +172,10 @@ void CrossSection::Calculate()
 		vector<string> row = GetRow( i );
 
 		// CH2 target
-		Target * ch2 = new CH2Target();
-		ch2->area      = n2n::ReadUncertainD( row, CS_CH2_AREA,      CS_CH2_AREA_UNC );
-		ch2->distance  = n2n::ReadUncertainD( row, CS_CH2_DISTANCE,  CS_CH2_DISTANCE_UNC );
-		ch2->thickness = n2n::ReadUncertainD( row, CS_CH2_THICKNESS, CS_CH2_THICKNESS_UNC );
-		ch2->decay     = n2n::ReadUncertainD( row, CS_CH2_DECAY,     CS_CH2_DECAY_UNC );
+		UncertainD ch2_area = n2n::ReadUncertainD( row, CS_CH2_AREA, CS_CH2_AREA_UNC );
+		UncertainD ch2_distance = n2n::ReadUncertainD( row, CS_CH2_DISTANCE, CS_CH2_DISTANCE_UNC );
+		UncertainD ch2_thickness = n2n::ReadUncertainD( row, CS_CH2_THICKNESS, CS_CH2_THICKNESS_UNC );
+		UncertainD ch2_decay = n2n::ReadUncertainD( row, CS_CH2_DECAY, CS_CH2_DECAY_UNC );
 
 		// C12 target
 		Target * c12 = new C12Target();
@@ -206,9 +205,9 @@ void CrossSection::Calculate()
 		double energy  = atof( row[CS_NEUTRON_ENERGY].c_str() );
 		double sigma_np = calculate::CalcNPCrossSection( energy );
 
-		double ch2_sang = calculate::CalcSolidAngle( ch2->area.val, ch2->distance.val );
-		double ch2_nH = calculate::CalcThicknessH_CH2( ch2->thickness.val );
-		double ch2_nC = calculate::CalcThicknessC_CH2( ch2->thickness.val );
+		double ch2_sang = calculate::CalcSolidAngle( ch2_area.val, ch2_distance.val );
+		double ch2_nH = calculate::CalcThicknessH_CH2( ch2_thickness.val );
+		double ch2_nC = calculate::CalcThicknessC_CH2( ch2_thickness.val );
 
 		double c12_sang = calculate::CalcSolidAngle( c12->area.val, c12->distance.val );
 		double c12_nC = calculate::CalcThicknessC_C12( c12->thickness.val );
@@ -219,7 +218,7 @@ void CrossSection::Calculate()
 
 		// Calculate cross sections
 		UncertainD sigma_n2n_ch2 = calculate::CalcN2NCrossSection( 
-			ch2->decay, neutrons, fg_clock, ch2_nC, ch2_sang );
+			ch2_decay, neutrons, fg_clock, ch2_nC, ch2_sang );
 		UncertainD sigma_n2n_c12 = calculate::CalcN2NCrossSection( 
 			c12->decay, neutrons, fg_clock, c12_nC, c12_sang );
 		n2n::WriteUncertainD( sigma_n2n_ch2, row, CS_CH2_XSECT, CS_CH2_XSECT_UNC );
