@@ -66,6 +66,40 @@ double CalcSolidAngle( double area, double dist )
 	return area / (dist * dist);
 }
 
+double CalcThicknessH_CH2( double thickness )
+{
+	double mass_H = 1.007825;	// u
+	double mass_C = 12;		// u
+	double mass = 2 * mass_H + mass_C;
+	double density = 0.89;		// g/cm^3
+
+	// 1 u = 1.6605389e-24 g
+	// 1 barn = 1e-24 cm^2
+	return 2 * thickness * density / (mass * 1.6605389);
+}
+
+double CalcThicknessC_CH2( double thickness )
+{
+	double mass_H = 1.007825;	// u
+	double mass_C = 12;		// u
+	double mass = 2 * mass_H + mass_C;
+	double density = 0.89;		// g/cm^3
+
+	// 1 u = 1.6605389e-24 g
+	// 1 barn = 1e-24 cm^2
+	return thickness * density / (mass * 1.6605389);
+}
+
+double CalcThicknessC_C12( double thickness )
+{
+	double mass = 12;		// u
+	double density = 2.276;		// g/cm^3
+
+	// 1 u = 1.6605389e-24 g
+	// 1 barn = 1e-24 cm^2
+	return thickness * density / (mass * 1.6605389);
+}
+
 /**
  * Calculate the neutron flux, @f$N_{flux}@f$.
  *
@@ -173,17 +207,21 @@ void CrossSection::Calculate()
 		double sigma_np = calculate::CalcNPCrossSection( energy );
 
 		double ch2_sang = calculate::CalcSolidAngle( ch2->area.val, ch2->distance.val );
+		double ch2_nH = calculate::CalcThicknessH_CH2( ch2->thickness.val );
+		double ch2_nC = calculate::CalcThicknessC_CH2( ch2->thickness.val );
+
 		double c12_sang = calculate::CalcSolidAngle( c12->area.val, c12->distance.val );
+		double c12_nC = calculate::CalcThicknessC_C12( c12->thickness.val );
 
 		UncertainD neutrons = calculate::CalcNeutronFlux( 
-			protons, sigma_np, ch2->ThicknessH(), ch2_sang, sang_det );
+			protons, sigma_np, ch2_nH, ch2_sang, sang_det );
 		n2n::WriteUncertainD( neutrons, row, CS_NEUTRON_FLUX, CS_NEUTRON_FLUX_UNC );
 
 		// Calculate cross sections
 		UncertainD sigma_n2n_ch2 = calculate::CalcN2NCrossSection( 
-			ch2->decay, neutrons, fg_clock, ch2->ThicknessC(), ch2_sang );
+			ch2->decay, neutrons, fg_clock, ch2_nC, ch2_sang );
 		UncertainD sigma_n2n_c12 = calculate::CalcN2NCrossSection( 
-			c12->decay, neutrons, fg_clock, c12->ThicknessC(), c12_sang );
+			c12->decay, neutrons, fg_clock, c12_nC, c12_sang );
 		n2n::WriteUncertainD( sigma_n2n_ch2, row, CS_CH2_XSECT, CS_CH2_XSECT_UNC );
 		n2n::WriteUncertainD( sigma_n2n_c12, row, CS_C12_XSECT, CS_C12_XSECT_UNC );
 
